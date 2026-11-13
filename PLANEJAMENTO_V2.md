@@ -439,14 +439,14 @@ export default nextConfig
 
 ### Fase 2 — Catálogo (leitura)
 
-- [ ] `app/page.tsx` — lista todos os produtos via `getProdutos()`
-- [ ] `components/catalogo/lista-produtos.tsx` — grid responsivo (1 → 2 → 3 colunas)
-- [ ] `components/catalogo/card-produto.tsx` — imagem, nome, preço e badge de promoção
-- [ ] `components/catalogo/categorias.tsx` — navegação horizontal com scroll no mobile
-- [ ] `app/produto/[slug]/page.tsx` — página individual com `getProdutoBySlug()`
-- [ ] `app/produto/[slug]/loading.tsx` — skeleton de loading
-- [ ] Header com logo e ícone do carrinho (contador de itens)
-- [ ] Footer simples
+- [x] `app/page.tsx` — lista todos os produtos via `getProdutos()`
+- [x] `components/catalogo/lista-produtos.tsx` — grid responsivo (1 → 2 → 3 colunas)
+- [x] `components/catalogo/card-produto.tsx` — imagem, nome, preço e badge de promoção
+- [x] `components/catalogo/categorias.tsx` — navegação horizontal com scroll no mobile
+- [x] `app/produto/[slug]/page.tsx` — página individual com `getProdutoBySlug()`
+- [x] `app/produto/[slug]/loading.tsx` — skeleton de loading
+- [x] Header com logo e ícone do carrinho (contador de itens)
+- [x] Footer simples
 
 ### Fase 3 — Busca e Filtros
 
