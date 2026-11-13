@@ -14,3 +14,4 @@
 - A página inicial oferece um link para a busca e mantém as âncoras de categoria. A rota de busca usa um seletor nativo para combinar categoria e termo.
 - A busca normaliza nome e descrição. Quando a URL repete um parâmetro, vale o primeiro valor.
 - O planejamento cita Next.js 15. A implementação segue a versão instalada, 16.4.5, com `searchParams` assíncrono e valores repassados ao componente cliente. A referência de versão do planejamento deve acompanhar o `package.json` em uma atualização da documentação.
+- O filtro “Apenas em promoção” usa `promocao=1` na URL e segue o mesmo critério dos cards. O produto tem promoção quando `preco_promocional` está preenchido.

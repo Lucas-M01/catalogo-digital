@@ -31,6 +31,7 @@ function normalizarBusca(texto: string): string {
 export async function buscarProdutos(
   query: string,
   categoriaSlug?: string,
+  apenasPromocao = false,
 ): Promise<Produto[]> {
   const q = normalizarBusca(query.trim());
   return produtosMock.filter((p) => {
@@ -39,6 +40,12 @@ export async function buscarProdutos(
     const matchCategoria = categoriaSlug
       ? p.categoria.slug === categoriaSlug
       : true;
-    return p.disponivel && (matchNome || matchDesc) && matchCategoria;
+    const matchPromocao = !apenasPromocao || p.preco_promocional !== null;
+    return (
+      p.disponivel &&
+      (matchNome || matchDesc) &&
+      matchCategoria &&
+      matchPromocao
+    );
   });
 }

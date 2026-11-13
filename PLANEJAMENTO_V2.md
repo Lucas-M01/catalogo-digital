@@ -452,6 +452,7 @@ export default nextConfig
 
 - [x] `app/busca/page.tsx` — recebe `searchParams` e chama `buscarProdutos()`
 - [x] `components/catalogo/filtros.tsx` — input de busca + seleção de categoria (`'use client'`)
+- [x] Filtro para exibir apenas produtos em promoção
 - [x] Estado da busca refletido na URL (fácil de compartilhar)
 - [x] Estado vazio com mensagem amigável quando não há resultados
 
