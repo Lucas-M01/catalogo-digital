@@ -8,3 +8,9 @@
 - A página 404 da raiz usa a mesma mensagem para produtos inexistentes e endereços desconhecidos. Ela herda o cabeçalho e o rodapé do layout compartilhado.
 - Os slugs do mock são definidos no build. Slugs fora dessa lista recebem HTTP 404 antes de iniciar a renderização do skeleton.
 - O Biome exclui `stitch-export/` para preservar os protótipos HTML exportados pelo Stitch.
+
+## Fase 3
+
+- A página inicial oferece um link para a busca e mantém as âncoras de categoria. A rota de busca usa um seletor nativo para combinar categoria e termo.
+- A busca normaliza nome e descrição. Quando a URL repete um parâmetro, vale o primeiro valor.
+- O planejamento cita Next.js 15. A implementação segue a versão instalada, 16.4.5, com `searchParams` assíncrono e valores repassados ao componente cliente. A referência de versão do planejamento deve acompanhar o `package.json` em uma atualização da documentação.

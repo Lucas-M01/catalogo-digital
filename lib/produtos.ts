@@ -24,14 +24,18 @@ export async function getCategorias(): Promise<Categoria[]> {
   return [...categoriasMock].sort((a, b) => a.ordem - b.ordem);
 }
 
+function normalizarBusca(texto: string): string {
+  return texto.normalize("NFD").replace(/\p{M}/gu, "").toLowerCase();
+}
+
 export async function buscarProdutos(
   query: string,
   categoriaSlug?: string,
 ): Promise<Produto[]> {
-  const q = query.toLowerCase();
+  const q = normalizarBusca(query.trim());
   return produtosMock.filter((p) => {
-    const matchNome = p.nome.toLowerCase().includes(q);
-    const matchDesc = p.descricao?.toLowerCase().includes(q) ?? false;
+    const matchNome = normalizarBusca(p.nome).includes(q);
+    const matchDesc = normalizarBusca(p.descricao ?? "").includes(q);
     const matchCategoria = categoriaSlug
       ? p.categoria.slug === categoriaSlug
       : true;

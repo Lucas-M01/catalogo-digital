@@ -450,10 +450,10 @@ export default nextConfig
 
 ### Fase 3 — Busca e Filtros
 
-- [ ] `app/busca/page.tsx` — recebe `searchParams` e chama `buscarProdutos()`
-- [ ] `components/catalogo/filtros.tsx` — input de busca + seleção de categoria (`'use client'`)
-- [ ] Estado da busca refletido na URL (fácil de compartilhar)
-- [ ] Estado vazio com mensagem amigável quando não há resultados
+- [x] `app/busca/page.tsx` — recebe `searchParams` e chama `buscarProdutos()`
+- [x] `components/catalogo/filtros.tsx` — input de busca + seleção de categoria (`'use client'`)
+- [x] Estado da busca refletido na URL (fácil de compartilhar)
+- [x] Estado vazio com mensagem amigável quando não há resultados
 
 ### Fase 4 — Carrinho e WhatsApp
 
