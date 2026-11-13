@@ -1,6 +1,6 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import type { Categoria } from "@/types";
 
@@ -23,6 +23,7 @@ export function Filtros({
   semResultados,
 }: Props) {
   const router = useRouter();
+  const pathname = usePathname();
   const [busca, setBusca] = useState(q);
   const [categoriaAtiva, setCategoriaAtiva] = useState(categoria);
   const [promocaoAtiva, setPromocaoAtiva] = useState(apenasPromocao);
@@ -53,18 +54,45 @@ export function Filtros({
     if (slug) params.set("categoria", slug);
     if (promocao) params.set("promocao", "1");
     const query = params.toString();
-    router.replace(query ? `/busca?${query}` : "/busca", { scroll: false });
+    router.replace(query ? `${pathname}?${query}` : pathname, {
+      scroll: false,
+    });
+  }
+
+  function aplicarFormulario(formulario: HTMLFormElement) {
+    const dados = new FormData(formulario);
+    atualizarUrl(
+      String(dados.get("q") ?? ""),
+      String(dados.get("categoria") ?? ""),
+      dados.get("promocao") === "1",
+    );
   }
 
   return (
     <>
       <search>
         <form
-          action="/busca"
+          action={pathname}
           className="grid gap-4 md:grid-cols-[2fr_1fr]"
+          onChange={(event) => {
+            const formulario = event.currentTarget;
+            clearTimeout(temporizador.current);
+            if (
+              event.target instanceof HTMLInputElement &&
+              event.target.name === "q"
+            ) {
+              temporizador.current = setTimeout(
+                () => aplicarFormulario(formulario),
+                300,
+              );
+              return;
+            }
+
+            aplicarFormulario(formulario);
+          }}
           onSubmit={(event) => {
             event.preventDefault();
-            atualizarUrl(busca, categoriaAtiva, promocaoAtiva);
+            aplicarFormulario(event.currentTarget);
           }}
         >
           <label className="grid gap-2 text-sm font-medium">
@@ -72,18 +100,11 @@ export function Filtros({
             <input
               className={classeControle}
               type="search"
+              enterKeyHint="search"
               name="q"
               placeholder="Digite o nome de um produto"
               value={busca}
-              onChange={(event) => {
-                const termo = event.target.value;
-                setBusca(termo);
-                clearTimeout(temporizador.current);
-                temporizador.current = setTimeout(
-                  () => atualizarUrl(termo, categoriaAtiva, promocaoAtiva),
-                  300,
-                );
-              }}
+              onChange={(event) => setBusca(event.currentTarget.value)}
             />
           </label>
           <label className="grid gap-2 text-sm font-medium">
@@ -92,11 +113,7 @@ export function Filtros({
               className={classeControle}
               name="categoria"
               value={categoriaAtiva}
-              onChange={(event) => {
-                const slug = event.target.value;
-                setCategoriaAtiva(slug);
-                atualizarUrl(busca, slug, promocaoAtiva);
-              }}
+              onChange={(event) => setCategoriaAtiva(event.currentTarget.value)}
             >
               <option value="">Todas as categorias</option>
               {categoriaAtiva &&
@@ -117,11 +134,9 @@ export function Filtros({
               name="promocao"
               value="1"
               checked={promocaoAtiva}
-              onChange={(event) => {
-                const marcada = event.target.checked;
-                setPromocaoAtiva(marcada);
-                atualizarUrl(busca, categoriaAtiva, marcada);
-              }}
+              onChange={(event) =>
+                setPromocaoAtiva(event.currentTarget.checked)
+              }
             />
             Apenas em promoção
           </label>
