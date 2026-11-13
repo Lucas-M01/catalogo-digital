@@ -1,5 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
+import { BotaoAdicionar } from "@/components/carrinho/botao-adicionar";
 import { PrecoProduto } from "@/components/catalogo/preco-produto";
 import type { Produto } from "@/types";
 
@@ -7,11 +8,11 @@ type Props = { produto: Produto };
 
 export function CardProduto({ produto }: Props) {
   return (
-    <article className="h-full rounded-xl border bg-card text-card-foreground">
+    <article className="flex h-full flex-col rounded-xl border bg-card text-card-foreground">
       <Link
         href={`/produto/${produto.slug}`}
         aria-labelledby={`produto-${produto.id}`}
-        className="group flex h-full min-h-12 flex-col overflow-hidden rounded-[inherit] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="group flex min-h-12 flex-1 flex-col overflow-hidden rounded-[inherit] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
         <div className="relative grid aspect-[4/3] place-items-center bg-muted">
           {produto.imagem_url ? (
@@ -39,6 +40,9 @@ export function CardProduto({ produto }: Props) {
           />
         </div>
       </Link>
+      <div className="px-4 pb-4">
+        <BotaoAdicionar produto={produto} className="w-full" />
+      </div>
     </article>
   );
 }

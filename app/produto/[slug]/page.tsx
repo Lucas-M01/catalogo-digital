@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { BotaoAdicionar } from "@/components/carrinho/botao-adicionar";
 import { PrecoProduto } from "@/components/catalogo/preco-produto";
 import { getProdutoBySlug, getProdutos } from "@/lib/produtos";
 
@@ -67,6 +68,7 @@ export default async function ProdutoPage({ params }: Props) {
           {produto.descricao && (
             <p className="max-w-prose">{produto.descricao}</p>
           )}
+          <BotaoAdicionar produto={produto} className="w-full md:w-auto" />
         </div>
       </article>
     </div>

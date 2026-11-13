@@ -1,5 +1,7 @@
-import { ShoppingCart, Utensils } from "lucide-react";
+import { Utensils } from "lucide-react";
 import Link from "next/link";
+import { DrawerCarrinho } from "@/components/carrinho/drawer-carrinho";
+import { numeroWhatsApp } from "@/lib/env";
 
 export function Header() {
   return (
@@ -12,16 +14,7 @@ export function Header() {
           <Utensils aria-hidden="true" className="size-5" />
           Cardápio Digital
         </Link>
-        <div className="flex min-h-12 items-center gap-2 text-muted-foreground">
-          <ShoppingCart aria-hidden="true" className="size-5" />
-          <span className="sr-only">Carrinho com 0 itens</span>
-          <span
-            aria-hidden="true"
-            className="rounded-full bg-muted px-2 py-0.5 text-sm"
-          >
-            0
-          </span>
-        </div>
+        <DrawerCarrinho numeroWhatsApp={numeroWhatsApp} />
       </div>
     </header>
   );

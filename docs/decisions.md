@@ -15,3 +15,8 @@
 - A busca normaliza nome e descrição. Quando a URL repete um parâmetro, vale o primeiro valor.
 - O planejamento cita Next.js 15. A implementação segue a versão instalada, 16.4.5, com `searchParams` assíncrono e valores repassados ao componente cliente. A referência de versão do planejamento deve acompanhar o `package.json` em uma atualização da documentação.
 - O filtro “Apenas em promoção” usa `promocao=1` na URL e segue o mesmo critério dos cards. O produto tem promoção quando `preco_promocional` está preenchido.
+
+## Fase 4
+
+- O Sheet usa o Dialog do Radix já instalado e muda de posição pelo breakpoint `md`, mantendo um único diálogo e o mesmo foco ao redimensionar.
+- O número público é validado no servidor antes de ser repassado ao botão. O preço unitário e o cálculo do total são compartilhados entre o carrinho e a mensagem, com a soma em centavos.

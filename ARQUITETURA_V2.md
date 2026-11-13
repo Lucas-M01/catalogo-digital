@@ -127,7 +127,7 @@ catalogo-digital/
 ├── next.config.ts
 ├── tailwind.config.ts                # Tokens de cor, fonte e breakpoints do projeto
 ├── components.json                   # Configuração do shadcn/ui
-└── .env.local                        # NUMERO_WHATSAPP (único obrigatório agora)
+└── .env.local                        # NEXT_PUBLIC_NUMERO_WHATSAPP (único obrigatório agora)
 ```
 
 ---
@@ -791,7 +791,7 @@ mkdir -p components/{ui,catalogo,carrinho,layout} lib/mock types
 # lib/utils.ts → cn, formatarPreco, gerarSlug
 
 # 8. Configurar .env.local
-echo "NUMERO_WHATSAPP=5583999999999" > .env.local
+echo "NEXT_PUBLIC_NUMERO_WHATSAPP=5583999999999" > .env.local
 ```
 
 ### `next.config.ts`
@@ -944,7 +944,7 @@ export async function buscarProdutos(query: string, categoriaSlug?: string): Pro
 #### `.env.local` com Supabase
 
 ```env
-NUMERO_WHATSAPP=5583999999999
+NEXT_PUBLIC_NUMERO_WHATSAPP=5583999999999
 NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
 NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
 SUPABASE_SERVICE_ROLE_KEY=eyJ...  # somente server-side, nunca expor no cliente
@@ -989,7 +989,7 @@ compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 
 [vars]
-NUMERO_WHATSAPP = ""
+NEXT_PUBLIC_NUMERO_WHATSAPP = ""
 # NEXT_PUBLIC_SUPABASE_URL = ""
 # NEXT_PUBLIC_SUPABASE_ANON_KEY = ""
 ```

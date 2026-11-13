@@ -1,23 +1,18 @@
+import { calcularTotal, subtotalItem } from "@/lib/carrinho";
 import type { ItemCarrinho } from "@/types";
 
 export function gerarLinkWhatsApp(
-  itens: ItemCarrinho[],
+  itens: readonly ItemCarrinho[],
   numeroWhatsApp: string,
 ): string {
   const linhas = itens.map(
     (item) =>
       `• ${item.quantidade}x ${item.produto.nome} — ${formatarPreco(
-        (item.produto.preco_promocional ?? item.produto.preco) *
-          item.quantidade,
+        subtotalItem(item),
       )}`,
   );
 
-  const total = itens.reduce(
-    (acc, item) =>
-      acc +
-      (item.produto.preco_promocional ?? item.produto.preco) * item.quantidade,
-    0,
-  );
+  const total = calcularTotal(itens);
 
   const mensagem = [
     "Olá! Gostaria de fazer um pedido:",

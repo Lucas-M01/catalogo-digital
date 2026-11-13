@@ -379,7 +379,7 @@ export function formatarPreco(valor: number): string {
 ### `.env.local`
 ```env
 # WhatsApp — único obrigatório no momento
-NUMERO_WHATSAPP=5583999999999
+NEXT_PUBLIC_NUMERO_WHATSAPP=5583999999999
 
 # Supabase — deixar comentado até ligar o banco
 # NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
@@ -435,7 +435,7 @@ export default nextConfig
 - [x] Criar `lib/mock/produtos.ts` com os 10 produtos de exemplo
 - [x] Criar `lib/produtos.ts` apontando para o mock
 - [x] Criar `lib/whatsapp.ts`
-- [x] Configurar `.env.local` com `NUMERO_WHATSAPP`
+- [x] Configurar `.env.local` com `NEXT_PUBLIC_NUMERO_WHATSAPP`
 
 ### Fase 2 — Catálogo (leitura)
 
@@ -458,11 +458,11 @@ export default nextConfig
 
 ### Fase 4 — Carrinho e WhatsApp
 
-- [ ] `components/carrinho/carrinho-provider.tsx` — Context API com `useState`
-- [ ] Funções: `adicionar`, `remover`, `alterarQuantidade`, `limpar`
-- [ ] `components/carrinho/botao-adicionar.tsx` — botão em cada card
-- [ ] `components/carrinho/drawer-carrinho.tsx` — bottom sheet no mobile, lateral no desktop
-- [ ] `components/carrinho/botao-whatsapp.tsx` — monta mensagem e abre `wa.me`
+- [x] `components/carrinho/carrinho-provider.tsx` — Context API com `useState`
+- [x] Funções: `adicionar`, `remover`, `alterarQuantidade`, `limpar`
+- [x] `components/carrinho/botao-adicionar.tsx` — botão em cada card
+- [x] `components/carrinho/drawer-carrinho.tsx` — bottom sheet no mobile, lateral no desktop
+- [x] `components/carrinho/botao-whatsapp.tsx` — monta mensagem e abre `wa.me`
 - [ ] Testar mensagem no iOS e Android
 
 ### Fase 5 — Polimento Visual
@@ -597,7 +597,7 @@ compatibility_date = "2024-09-23"
 compatibility_flags = ["nodejs_compat"]
 
 [vars]
-NUMERO_WHATSAPP = ""                  # preencher
+NEXT_PUBLIC_NUMERO_WHATSAPP = ""                  # preencher
 # NEXT_PUBLIC_SUPABASE_URL = ""       # descomentar quando usar Supabase
 # NEXT_PUBLIC_SUPABASE_ANON_KEY = ""  # descomentar quando usar Supabase
 ```
