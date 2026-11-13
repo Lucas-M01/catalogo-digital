@@ -7,6 +7,8 @@ import { getProdutoBySlug, getProdutos } from "@/lib/produtos";
 
 type Props = { params: Promise<{ slug: string }> };
 
+export const dynamicParams = false;
+
 export async function generateStaticParams() {
   const produtos = await getProdutos();
   return produtos.map(({ slug }) => ({ slug }));
