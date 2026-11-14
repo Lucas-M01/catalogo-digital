@@ -326,7 +326,7 @@ Todos os componentes seguem a ordem: **base (mobile) → `md:` (tablet) → `lg:
 
 - Botão "Adicionar ao carrinho" sempre visível e grande (min 48px de altura — tamanho mínimo de toque)
 - Drawer do carrinho abre por baixo no mobile (bottom sheet), lateral no desktop
-- Card de produto em coluna única no mobile, 2 colunas no tablet, 3 no desktop
+- Cards em 2 colunas no mobile, 3 no tablet e 4 no desktop após a revisão visual do Stitch
 - Filtros de categoria em scroll horizontal no mobile, vertical/sidebar no desktop
 - Input de busca ocupa toda a largura no mobile
 - Imagem do produto ocupa pelo menos 40% da altura do card no mobile
@@ -472,6 +472,7 @@ export default nextConfig
 - [x] Imagens com `next/image` e `preload` nos quatro primeiros cards e na imagem principal do produto
 - [x] Loading skeletons em todas as páginas
 - [x] Cores e tipografia definidas em `app/globals.css` com `@theme inline` (Tailwind CSS 4)
+- [x] Aplicar o tema escuro, os cards e o layout do detalhe com base no Stitch
 - [ ] Testar performance no PageSpeed Mobile (meta: acima de 85)
 
 ---

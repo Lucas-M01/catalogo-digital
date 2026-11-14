@@ -1,13 +1,13 @@
 import type { Metadata, Viewport } from "next";
-import { Geist } from "next/font/google";
+import { Inter } from "next/font/google";
 import { CarrinhoProvider } from "@/components/carrinho/carrinho-provider";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { siteUrl } from "@/lib/env";
 import "./globals.css";
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const inter = Inter({
+  variable: "--font-inter",
   subsets: ["latin"],
   display: "swap",
 });
@@ -30,17 +30,17 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#fafaf9",
+  themeColor: "#12131a",
   viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="pt-BR" className={`${geistSans.variable} h-full antialiased`}>
+    <html lang="pt-BR" className={`${inter.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <CarrinhoProvider>
           <Header />
-          <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8 md:px-6">
+          <main className="mx-auto w-full max-w-6xl flex-1 px-3 py-6 md:px-6">
             {children}
           </main>
           <Footer />

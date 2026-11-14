@@ -23,7 +23,9 @@
 
 ## Fase 5
 
-- A paleta usa neutros e verde-petróleo como destaque, com Geist via `next/font`. O Tailwind CSS 4 configura as variáveis em `app/globals.css` com `@theme inline`.
+- A revisão com o Stitch aplica tema escuro, verde de destaque e Inter via `next/font`. O Tailwind CSS 4 configura as variáveis em `app/globals.css` com `@theme inline`.
 - O Next.js 16 usa `preload` no lugar de `priority` e recebe `themeColor` no export `viewport`. O nome provisório é “Cardápio Digital”. Defina `SITE_URL` com a origem pública em produção para gerar URLs de compartilhamento. O desenvolvimento local usa `http://localhost:3000` por padrão.
 - Na home, a ordem de exibição das seções determina os quatro cards com preload. Na busca, vale a ordem dos resultados.
 - As fotos de Brownie com Sorvete e Combo Solo retornaram HTTP 404 no Unsplash. O mock registra essas imagens como ausentes para usar o fallback.
+- A revisão visual segue o grid do Stitch com duas colunas no celular, três no tablet e quatro no desktop. A home mantém as seções por categoria.
+- O detalhe usa a foto principal e a descrição do catálogo, e recomenda outros produtos da mesma categoria. Os botões dos cards e do detalhe adicionam ao carrinho, onde o pedido completo é enviado ao WhatsApp.

@@ -25,7 +25,9 @@ export default async function HomePage() {
     <div className="space-y-8">
       <div className="space-y-4">
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <h1 className="text-3xl font-semibold tracking-tight">Cardápio</h1>
+          <h1 className="text-xl font-bold uppercase tracking-tight">
+            Cardápio
+          </h1>
           <Link
             href="/busca"
             className="inline-flex min-h-12 items-center rounded-lg border px-4 text-sm font-medium hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring"
@@ -40,7 +42,7 @@ export default async function HomePage() {
           key={slug}
           id={`categoria-${slug}`}
           aria-labelledby={`titulo-${slug}`}
-          className="scroll-mt-4 space-y-4"
+          className="scroll-mt-4 space-y-3"
         >
           <h2 id={`titulo-${slug}`} className="text-xl font-semibold">
             {nome}

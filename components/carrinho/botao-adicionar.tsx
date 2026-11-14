@@ -11,9 +11,11 @@ import type { Produto } from "@/types";
 export function BotaoAdicionar({
   produto,
   className,
+  compacto = false,
 }: {
   produto: Produto;
   className?: string;
+  compacto?: boolean;
 }) {
   const { itens, adicionar } = useCarrinho();
   const [adicionado, setAdicionado] = useState(false);
@@ -48,7 +50,9 @@ export function BotaoAdicionar({
       }}
     >
       {adicionado ? <Check aria-hidden="true" /> : <Plus aria-hidden="true" />}
-      <span aria-live="polite">{texto}</span>
+      <span aria-live="polite">
+        {compacto && !adicionado && !limiteAtingido ? "Adicionar" : texto}
+      </span>
     </Button>
   );
 }

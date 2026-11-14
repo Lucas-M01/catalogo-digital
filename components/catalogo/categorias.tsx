@@ -10,7 +10,7 @@ export function Categorias({ categorias }: Props) {
           <li key={slug} className="shrink-0">
             <a
               href={`#categoria-${slug}`}
-              className="inline-flex min-h-12 items-center rounded-full border px-4 text-sm font-medium hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring"
+              className="inline-flex min-h-12 items-center rounded-full border bg-card px-4 text-xs font-bold uppercase tracking-wide text-muted-foreground hover:border-primary hover:text-primary-hover focus-visible:outline-2 focus-visible:outline-ring"
             >
               {nome}
             </a>
