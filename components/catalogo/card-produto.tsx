@@ -20,18 +20,18 @@ export function CardProduto({ produto, preload }: Props) {
             {...imagemProduto(produto)}
             fill
             preload={preload}
-            sizes="(min-width: 72rem) 355.33px, (min-width: 64rem) calc((100vw - 80px) / 3 - 2px), (min-width: 48rem) calc(50vw - 34px), calc(100vw - 26px)"
+            sizes="(min-width: 72rem) 355.33px, (min-width: 64rem) calc((100vw - 80px) / 3 - 2px), (min-width: 48rem) calc(50vw - 34px), calc(50vw - 18px)"
             className="object-cover motion-safe:transition-transform motion-safe:duration-300 motion-safe:ease-out motion-safe:group-hover:scale-[1.03]"
           />
         </div>
-        <div className="flex flex-1 flex-col justify-between gap-2 p-4">
+        <div className="flex flex-1 flex-col justify-between gap-2 p-2 md:p-4">
           <h3
             id={`produto-${produto.id}`}
             className="font-semibold [overflow-wrap:anywhere] motion-safe:transition-colors motion-safe:duration-200 motion-safe:ease-out group-hover:text-primary-hover"
           >
             {produto.nome}
           </h3>
-          <p className="text-sm uppercase text-muted-foreground">
+          <p className="text-xs uppercase md:text-sm text-muted-foreground">
             {produto.categoria.nome}
           </p>
           <PrecoProduto
@@ -40,8 +40,12 @@ export function CardProduto({ produto, preload }: Props) {
           />
         </div>
       </Link>
-      <div className="px-4 pb-4">
-        <BotaoAdicionar produto={produto} className="w-full" />
+      <div className="px-2 pb-2 md:px-4 md:pb-4">
+        <BotaoAdicionar
+          produto={produto}
+          className="w-full gap-1 md:gap-2"
+          compacto
+        />
       </div>
     </article>
   );

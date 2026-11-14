@@ -11,9 +11,11 @@ import type { Produto } from "@/types";
 export function BotaoAdicionar({
   produto,
   className,
+  compacto = false,
 }: {
   produto: Produto;
   className?: string;
+  compacto?: boolean;
 }) {
   const { itens, adicionar, alterarQuantidade } = useCarrinho();
   const botaoAdicionar = useRef<HTMLButtonElement>(null);
@@ -64,7 +66,7 @@ export function BotaoAdicionar({
         onClick={() => adicionar(produto)}
       >
         <Plus aria-hidden="true" />
-        {quantidade === 0 && "Adicionar ao carrinho"}
+        {quantidade === 0 && (compacto ? "Adicionar" : "Adicionar ao carrinho")}
       </Button>
     </div>
   );
