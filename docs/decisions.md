@@ -29,3 +29,4 @@
 - As fotos de Brownie com Sorvete e Combo Solo retornaram HTTP 404 no Unsplash. O mock registra essas imagens como ausentes para usar o fallback.
 - A revisão visual segue o grid do Stitch com duas colunas no celular, três no tablet e quatro no desktop. A home mantém as seções por categoria.
 - O detalhe usa a foto principal e a descrição do catálogo, e recomenda outros produtos da mesma categoria. Os botões dos cards e do detalhe adicionam ao carrinho, onde o pedido completo é enviado ao WhatsApp.
+- O catálogo abre no tema escuro na primeira visita. O seletor do cabeçalho salva a escolha por navegador e a restaura antes da renderização visual da página.

@@ -473,6 +473,7 @@ export default nextConfig
 - [x] Loading skeletons em todas as páginas
 - [x] Cores e tipografia definidas em `app/globals.css` com `@theme inline` (Tailwind CSS 4)
 - [x] Aplicar o tema escuro, os cards e o layout do detalhe com base no Stitch
+- [x] Alternar entre os temas escuro e claro pelo cabeçalho e lembrar a escolha no navegador
 - [ ] Testar performance no PageSpeed Mobile (meta: acima de 85)
 
 ---

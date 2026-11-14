@@ -2,6 +2,8 @@
 @import "tw-animate-css";
 @import "shadcn/tailwind.css";
 
+@custom-variant dark (&:where([data-tema="escuro"], [data-tema="escuro"] *));
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -33,6 +35,7 @@
   --color-primary-foreground: var(--primary-foreground);
   --color-primary: var(--primary);
   --color-primary-hover: var(--primary-hover);
+  --color-primary-button-hover: var(--primary-button-hover);
   --color-popover-foreground: var(--popover-foreground);
   --color-popover: var(--popover);
   --color-card-foreground: var(--card-foreground);
@@ -56,6 +59,7 @@
   --popover-foreground: var(--foreground);
   --primary: #25d366;
   --primary-hover: #4ff07f;
+  --primary-button-hover: var(--primary-hover);
   --primary-foreground: #002109;
   --secondary: #282a31;
   --secondary-foreground: var(--foreground);
@@ -81,6 +85,27 @@
   --sidebar-accent-foreground: var(--accent-foreground);
   --sidebar-border: var(--border);
   --sidebar-ring: var(--ring);
+}
+
+:root[data-tema="claro"] {
+  color-scheme: light;
+  --background: #f7f8fa;
+  --foreground: #191c23;
+  --card: #ffffff;
+  --popover: #ffffff;
+  --primary: #25d366;
+  --primary-hover: #166534;
+  --primary-button-hover: #20be59;
+  --primary-foreground: #002109;
+  --secondary: #e9ecf1;
+  --muted: #eceef2;
+  --muted-foreground: #4d5652;
+  --accent: #e5f4ea;
+  --accent-foreground: #166534;
+  --destructive: #b42318;
+  --border: #d6dbe0;
+  --input: #79818b;
+  --ring: #166534;
 }
 
 @layer base {

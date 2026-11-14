@@ -1,12 +1,13 @@
 import { Utensils } from "lucide-react";
 import Link from "next/link";
 import { DrawerCarrinho } from "@/components/carrinho/drawer-carrinho";
+import { BotaoTema } from "@/components/layout/botao-tema";
 import { numeroWhatsApp } from "@/lib/env";
 
 export function Header() {
   return (
     <header className="border-b bg-card">
-      <div className="mx-auto flex max-w-6xl items-center justify-between gap-4 px-3 py-2 md:px-6">
+      <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-2 md:px-6">
         <Link
           href="/"
           className="inline-flex min-h-12 items-center gap-2 rounded-sm font-bold uppercase tracking-tight text-primary-hover focus-visible:outline-2 focus-visible:outline-ring"
@@ -17,7 +18,10 @@ export function Header() {
           />
           Cardápio Digital
         </Link>
-        <DrawerCarrinho numeroWhatsApp={numeroWhatsApp} />
+        <div className="flex shrink-0 items-center gap-1">
+          <BotaoTema />
+          <DrawerCarrinho numeroWhatsApp={numeroWhatsApp} />
+        </div>
       </div>
     </header>
   );

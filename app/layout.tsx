@@ -4,6 +4,7 @@ import { CarrinhoProvider } from "@/components/carrinho/carrinho-provider";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
 import { siteUrl } from "@/lib/env";
+import { scriptInicialTema } from "@/lib/tema";
 import "./globals.css";
 
 const inter = Inter({
@@ -30,13 +31,20 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#12131a",
   viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html lang="pt-BR" className={`${inter.variable} h-full antialiased`}>
+    <html
+      lang="pt-BR"
+      data-tema="escuro"
+      className={`${inter.variable} h-full antialiased`}
+      suppressHydrationWarning
+    >
+      <head>
+        <script>{scriptInicialTema}</script>
+      </head>
       <body className="flex min-h-full flex-col">
         <CarrinhoProvider>
           <Header />
