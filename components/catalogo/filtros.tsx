@@ -149,7 +149,7 @@ export function Filtros({
             filtros.
           </output>
           <button
-            className="min-h-12 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary-button-hover focus-visible:outline-2 focus-visible:outline-ring"
+            className="min-h-12 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground motion-safe:transition-colors motion-safe:duration-200 motion-safe:ease-out hover:bg-primary-button-hover focus-visible:outline-2 focus-visible:outline-ring"
             type="button"
             onClick={() => {
               setBusca("");

@@ -66,7 +66,7 @@ export default async function ProdutoPage({ params }: Props) {
           <li>
             <Link
               href="/"
-              className="inline-flex min-h-12 items-center hover:text-primary-hover"
+              className="inline-flex min-h-12 items-center motion-safe:transition-colors motion-safe:duration-200 motion-safe:ease-out hover:text-primary-hover"
             >
               Cardápio
             </Link>

@@ -24,7 +24,7 @@ export default async function HomePage({ searchParams }: PageProps<"/">) {
         <h1 className="text-xl font-bold uppercase tracking-tight">Cardápio</h1>
         <Link
           href="/busca"
-          className="inline-flex min-h-12 items-center rounded-lg border px-4 text-sm font-medium hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring"
+          className="inline-flex min-h-12 items-center rounded-lg border px-4 text-sm font-medium motion-safe:transition-colors motion-safe:duration-200 motion-safe:ease-out hover:bg-accent focus-visible:outline-2 focus-visible:outline-ring"
         >
           Buscar produtos
         </Link>

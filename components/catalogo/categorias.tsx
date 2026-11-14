@@ -24,7 +24,7 @@ export function Categorias({ categorias, categoriaAtiva }: Props) {
                 scroll={false}
                 aria-current={ativa ? "true" : undefined}
                 className={cn(
-                  "inline-flex min-h-12 items-center rounded-full border px-4 text-xs font-bold uppercase tracking-wide",
+                  "inline-flex min-h-12 items-center rounded-full border px-4 text-xs font-bold uppercase tracking-wide motion-safe:transition-colors motion-safe:duration-200 motion-safe:ease-out",
                   ativa
                     ? "border-primary bg-primary text-primary-foreground"
                     : "bg-card text-primary-hover hover:border-primary hover:bg-accent",
