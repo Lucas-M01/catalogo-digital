@@ -119,9 +119,6 @@
   body {
     @apply bg-background text-foreground;
   }
-  main :is(h1, h2, h3) {
-    color: var(--primary-hover);
-  }
   html {
     @apply scroll-pt-20 font-sans;
   }
