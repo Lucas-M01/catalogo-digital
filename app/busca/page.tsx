@@ -1,6 +1,9 @@
+import type { Metadata } from "next";
 import { Filtros } from "@/components/catalogo/filtros";
 import { ListaProdutos } from "@/components/catalogo/lista-produtos";
 import { buscarProdutos, getCategorias } from "@/lib/produtos";
+
+export const metadata: Metadata = { title: "Buscar produtos" };
 
 type Props = {
   searchParams: Promise<{

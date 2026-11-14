@@ -100,8 +100,7 @@ const produtosSemSlug: Omit<Produto, "slug">[] = [
       "Brownie quentinho de chocolate com uma bola de sorvete de creme.",
     preco: 16.0,
     preco_promocional: null,
-    imagem_url:
-      "https://images.unsplash.com/photo-1606313564200-e75d5e30ef07?w=400",
+    imagem_url: null,
     categoria: categoriasMock[2],
     disponivel: true,
     destaque: true,
@@ -142,8 +141,7 @@ const produtosSemSlug: Omit<Produto, "slug">[] = [
     descricao: "1 lanche à escolha + 1 bebida lata + 1 sobremesa do dia.",
     preco: 42.0,
     preco_promocional: 36.0,
-    imagem_url:
-      "https://images.unsplash.com/photo-1594212699903-ec8a3eca368f?w=400",
+    imagem_url: null,
     categoria: categoriasMock[3],
     disponivel: true,
     destaque: false,

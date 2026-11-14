@@ -34,7 +34,10 @@ export function BotaoAdicionar({
   return (
     <Button
       type="button"
-      className={cn("min-h-12 min-w-12", className)}
+      className={cn(
+        "h-auto min-h-12 min-w-12 py-2 whitespace-normal",
+        className,
+      )}
       disabled={limiteAtingido}
       aria-label={`${texto} — ${produto.nome}`}
       onClick={() => {

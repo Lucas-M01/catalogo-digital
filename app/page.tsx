@@ -16,6 +16,11 @@ export default async function HomePage() {
     produtosPorCategoria.has(slug),
   );
 
+  const imagensPrioritarias = categoriasComProdutos
+    .flatMap(({ slug }) => produtosPorCategoria.get(slug) ?? [])
+    .slice(0, 4)
+    .map(({ id }) => id);
+
   return (
     <div className="space-y-8">
       <div className="space-y-4">
@@ -40,7 +45,10 @@ export default async function HomePage() {
           <h2 id={`titulo-${slug}`} className="text-xl font-semibold">
             {nome}
           </h2>
-          <ListaProdutos produtos={produtosPorCategoria.get(slug) ?? []} />
+          <ListaProdutos
+            produtos={produtosPorCategoria.get(slug) ?? []}
+            imagensPrioritarias={imagensPrioritarias}
+          />
         </section>
       ))}
     </div>

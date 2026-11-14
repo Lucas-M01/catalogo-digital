@@ -20,3 +20,10 @@
 
 - O Sheet usa o Dialog do Radix já instalado e muda de posição pelo breakpoint `md`, mantendo um único diálogo e o mesmo foco ao redimensionar.
 - O número público é validado no servidor antes de ser repassado ao botão. O preço unitário e o cálculo do total são compartilhados entre o carrinho e a mensagem, com a soma em centavos.
+
+## Fase 5
+
+- A paleta usa neutros e verde-petróleo como destaque, com Geist via `next/font`. O Tailwind CSS 4 configura as variáveis em `app/globals.css` com `@theme inline`.
+- O Next.js 16 usa `preload` no lugar de `priority` e recebe `themeColor` no export `viewport`. O nome provisório é “Cardápio Digital”. Defina `SITE_URL` com a origem pública em produção para gerar URLs de compartilhamento. O desenvolvimento local usa `http://localhost:3000` por padrão.
+- Na home, a ordem de exibição das seções determina os quatro cards com preload. Na busca, vale a ordem dos resultados.
+- As fotos de Brownie com Sorvete e Combo Solo retornaram HTTP 404 no Unsplash. O mock registra essas imagens como ausentes para usar o fallback.

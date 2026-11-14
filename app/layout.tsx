@@ -1,31 +1,42 @@
-import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import type { Metadata, Viewport } from "next";
+import { Geist } from "next/font/google";
 import { CarrinhoProvider } from "@/components/carrinho/carrinho-provider";
 import { Footer } from "@/components/layout/footer";
 import { Header } from "@/components/layout/header";
+import { siteUrl } from "@/lib/env";
 import "./globals.css";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
   subsets: ["latin"],
+  display: "swap",
 });
 
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+const nomeLoja = "Cardápio Digital";
+const description =
+  "Confira o cardápio, monte seu carrinho e envie seu pedido pelo WhatsApp.";
 
 export const metadata: Metadata = {
-  title: { default: "Cardápio Digital", template: "%s | Cardápio Digital" },
-  description: "Confira os produtos e preços do cardápio.",
+  metadataBase: siteUrl,
+  title: { default: nomeLoja, template: `%s | ${nomeLoja}` },
+  description,
+  openGraph: {
+    type: "website",
+    locale: "pt_BR",
+    siteName: nomeLoja,
+    title: nomeLoja,
+    description,
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#fafaf9",
+  viewportFit: "cover",
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
   return (
-    <html
-      lang="pt-BR"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
+    <html lang="pt-BR" className={`${geistSans.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col">
         <CarrinhoProvider>
           <Header />

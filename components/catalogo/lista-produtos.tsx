@@ -1,14 +1,20 @@
 import { CardProduto } from "@/components/catalogo/card-produto";
 import type { Produto } from "@/types";
 
-type Props = { produtos: Produto[] };
+type Props = { produtos: Produto[]; imagensPrioritarias?: readonly string[] };
 
-export function ListaProdutos({ produtos }: Props) {
+export function ListaProdutos({
+  produtos,
+  imagensPrioritarias = produtos.slice(0, 4).map(({ id }) => id),
+}: Props) {
   return (
     <ul className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
       {produtos.map((produto) => (
         <li key={produto.id}>
-          <CardProduto produto={produto} />
+          <CardProduto
+            produto={produto}
+            preload={imagensPrioritarias.includes(produto.id)}
+          />
         </li>
       ))}
     </ul>

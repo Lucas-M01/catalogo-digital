@@ -13,7 +13,7 @@ type Props = {
 };
 
 const classeControle =
-  "min-h-12 w-full rounded-lg border bg-background px-3 text-base focus-visible:outline-2 focus-visible:outline-ring";
+  "min-h-12 w-full rounded-lg border border-input bg-card px-3 text-base focus-visible:outline-2 focus-visible:outline-ring";
 
 export function Filtros({
   q,
@@ -73,7 +73,7 @@ export function Filtros({
       <search>
         <form
           action={pathname}
-          className="grid gap-4 md:grid-cols-[2fr_1fr]"
+          className="grid grid-cols-1 gap-4 md:grid-cols-[minmax(0,2fr)_minmax(0,1fr)]"
           onChange={(event) => {
             const formulario = event.currentTarget;
             clearTimeout(temporizador.current);
@@ -127,7 +127,7 @@ export function Filtros({
               ))}
             </select>
           </label>
-          <label className="flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border bg-background px-3 text-sm font-medium md:col-span-2 md:w-fit">
+          <label className="flex min-h-12 cursor-pointer items-center gap-3 rounded-lg border border-input bg-card px-3 text-sm font-medium md:col-span-2 md:w-fit">
             <input
               className="size-5 accent-primary focus-visible:outline-2 focus-visible:outline-ring"
               type="checkbox"
@@ -149,7 +149,7 @@ export function Filtros({
             filtros.
           </output>
           <button
-            className="min-h-12 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary/80 focus-visible:outline-2 focus-visible:outline-ring"
+            className="min-h-12 rounded-lg bg-primary px-4 text-sm font-medium text-primary-foreground hover:bg-primary-hover focus-visible:outline-2 focus-visible:outline-ring"
             type="button"
             onClick={() => {
               setBusca("");

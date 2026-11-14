@@ -7,3 +7,13 @@ if (!numero || !/^[1-9][0-9]{7,14}$/.test(numero)) {
 }
 
 export const numeroWhatsApp = numero;
+
+const url = new URL(process.env.SITE_URL?.trim() || "http://localhost:3000");
+if (
+  !["http:", "https:"].includes(url.protocol) ||
+  url.href !== `${url.origin}/`
+) {
+  throw new Error("Configure SITE_URL com a origem HTTP ou HTTPS da loja.");
+}
+
+export const siteUrl = url;

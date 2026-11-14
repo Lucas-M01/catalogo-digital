@@ -81,7 +81,7 @@ export function DrawerCarrinho({ numeroWhatsApp }: { numeroWhatsApp: string }) {
             </div>
           )}
         </div>
-        <div className="shrink-0 space-y-3 border-t p-4 pb-[max(1rem,env(safe-area-inset-bottom))]">
+        <div className="shrink-0 space-y-3 border-t p-4 pb-[calc(1rem+env(safe-area-inset-bottom))]">
           <p
             className="flex justify-between gap-3 font-semibold"
             aria-live="polite"

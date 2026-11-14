@@ -8,7 +8,7 @@ export default function LoadingProduto() {
         <div className="flex h-12 items-center">
           <Skeleton className="h-4 w-32" />
         </div>
-        <div className="grid gap-6 md:grid-cols-2 md:items-start">
+        <div className="grid grid-cols-1 gap-6 md:grid-cols-2 md:items-start">
           <Skeleton className="aspect-square w-full rounded-xl" />
           <div className="space-y-4">
             <Skeleton className="h-4 w-24" />

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { useCarrinho } from "@/components/carrinho/carrinho-provider";
 import { Button } from "@/components/ui/button";
 import { precoUnitario, QUANTIDADE_MAXIMA } from "@/lib/carrinho";
+import { imagemProduto } from "@/lib/imagem-produto";
 import { formatarPreco } from "@/lib/whatsapp";
 import type { ItemCarrinho as Item } from "@/types";
 
@@ -14,18 +15,15 @@ export function ItemCarrinho({ produto, quantidade }: Item) {
   return (
     <li className="grid grid-cols-[auto_1fr] gap-x-3 gap-y-2 py-3">
       <div className="relative size-14 overflow-hidden rounded-md bg-muted">
-        {produto.imagem_url && (
-          <Image
-            src={produto.imagem_url}
-            alt=""
-            fill
-            sizes="56px"
-            className="object-cover"
-          />
-        )}
+        <Image
+          {...imagemProduto(produto)}
+          fill
+          sizes="56px"
+          className="object-cover"
+        />
       </div>
       <div className="min-w-0">
-        <p className="break-words font-medium">{produto.nome}</p>
+        <p className="font-medium [overflow-wrap:anywhere]">{produto.nome}</p>
         <p className="text-sm text-muted-foreground">
           {formatarPreco(precoUnitario(produto))} / un.
         </p>

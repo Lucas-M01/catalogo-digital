@@ -467,11 +467,11 @@ export default nextConfig
 
 ### Fase 5 — Polimento Visual
 
-- [ ] Responsividade revisada em 320px, 375px, 768px, 1280px
-- [ ] Favicon e meta tags básicas
-- [ ] Imagens com `next/image` e `priority` nos primeiros cards
-- [ ] Loading skeletons em todas as páginas
-- [ ] Cores e tipografia definidas no `tailwind.config`
+- [x] Responsividade revisada em 320px, 375px, 768px, 1280px
+- [x] Favicon e meta tags básicas
+- [x] Imagens com `next/image` e `preload` nos quatro primeiros cards e na imagem principal do produto
+- [x] Loading skeletons em todas as páginas
+- [x] Cores e tipografia definidas em `app/globals.css` com `@theme inline` (Tailwind CSS 4)
 - [ ] Testar performance no PageSpeed Mobile (meta: acima de 85)
 
 ---
