@@ -31,6 +31,9 @@ export function CardProduto({ produto, preload }: Props) {
           >
             {produto.nome}
           </h3>
+          <p className="text-sm text-muted-foreground">
+            {produto.categoria.nome}
+          </p>
           <PrecoProduto
             preco={produto.preco}
             preco_promocional={produto.preco_promocional}

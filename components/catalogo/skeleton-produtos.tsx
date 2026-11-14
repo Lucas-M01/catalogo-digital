@@ -8,6 +8,7 @@ export function SkeletonProdutos() {
           <Skeleton className="aspect-[4/3] rounded-none" />
           <div className="space-y-3 p-4">
             <Skeleton className="h-5 w-3/4" />
+            <Skeleton className="h-5 w-20" />
             <Skeleton className="h-5 w-24" />
             <Skeleton className="h-12 w-full" />
           </div>

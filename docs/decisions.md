@@ -25,9 +25,9 @@
 
 - A revisão com o Stitch aplica tema escuro, verde de destaque e Inter via `next/font`. O Tailwind CSS 4 configura as variáveis em `app/globals.css` com `@theme inline`.
 - O Next.js 16 usa `preload` no lugar de `priority` e recebe `themeColor` no export `viewport`. O nome provisório é “Cardápio Digital”. Defina `SITE_URL` com a origem pública em produção para gerar URLs de compartilhamento. O desenvolvimento local usa `http://localhost:3000` por padrão.
-- Na home, a ordem de exibição das seções determina os quatro cards com preload. Na busca, vale a ordem dos resultados.
+- Na home e na busca, os quatro primeiros cards da lista recebem preload.
 - As fotos de Brownie com Sorvete e Combo Solo retornaram HTTP 404 no Unsplash. O mock registra essas imagens como ausentes para usar o fallback.
-- Os cards retomam o formato original com imagem em 4:3 e grid de uma, duas e três colunas. As categorias usam o verde de cada tema.
+- Os cards retomam o formato original com imagem em 4:3 e grid de uma, duas e três colunas. A home usa um grid único. Cada card exibe a categoria abaixo do nome, em tom secundário.
 - O detalhe usa a foto principal e a descrição do catálogo, e recomenda outros produtos da mesma categoria. Os botões dos cards e do detalhe adicionam ao carrinho, onde o pedido completo é enviado ao WhatsApp.
 - O catálogo abre no tema escuro na primeira visita. O seletor do cabeçalho salva a escolha por navegador e a restaura antes da renderização visual da página.
 - O cabeçalho acompanha a rolagem. Cards e detalhes mostram a quantidade do carrinho após adicionar o produto, com controles para ajustar ou remover a unidade restante.
