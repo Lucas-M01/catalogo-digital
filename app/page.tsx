@@ -1,9 +1,22 @@
 import Link from "next/link";
+import { Categorias } from "@/components/catalogo/categorias";
 import { ListaProdutos } from "@/components/catalogo/lista-produtos";
-import { getProdutos } from "@/lib/produtos";
+import {
+  getCategorias,
+  getProdutos,
+  getProdutosPorCategoria,
+} from "@/lib/produtos";
 
-export default async function HomePage() {
-  const produtos = await getProdutos();
+export default async function HomePage({ searchParams }: PageProps<"/">) {
+  const [{ categoria }, categorias] = await Promise.all([
+    searchParams,
+    getCategorias(),
+  ]);
+  const slug = Array.isArray(categoria) ? categoria[0] : categoria;
+  const categoriaAtiva = categorias.find((item) => item.slug === slug)?.slug;
+  const produtos = await (categoriaAtiva
+    ? getProdutosPorCategoria(categoriaAtiva)
+    : getProdutos());
 
   return (
     <div className="space-y-8">
@@ -16,7 +29,14 @@ export default async function HomePage() {
           Buscar produtos
         </Link>
       </div>
-      <ListaProdutos produtos={produtos} />
+      <Categorias categorias={categorias} categoriaAtiva={categoriaAtiva} />
+      {produtos.length > 0 ? (
+        <ListaProdutos produtos={produtos} />
+      ) : (
+        <p className="text-sm text-muted-foreground">
+          Nenhum produto disponível nesta seleção.
+        </p>
+      )}
     </div>
   );
 }

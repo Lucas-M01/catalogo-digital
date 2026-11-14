@@ -10,6 +10,11 @@ export default function LoadingCatalogo() {
           <Skeleton className="h-7 w-32" />
           <Skeleton className="h-12 w-36" />
         </div>
+        <div className="flex gap-2 overflow-hidden p-1">
+          <Skeleton className="h-12 w-20 shrink-0 rounded-full" />
+          <Skeleton className="h-12 w-24 shrink-0 rounded-full" />
+          <Skeleton className="h-12 w-24 shrink-0 rounded-full" />
+        </div>
         <SkeletonProdutos />
       </div>
     </>
