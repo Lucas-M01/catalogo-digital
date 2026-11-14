@@ -1,7 +1,7 @@
 "use client";
 
-import { Check, Plus } from "lucide-react";
-import { useEffect, useRef, useState } from "react";
+import { Minus, Plus } from "lucide-react";
+import { useRef } from "react";
 import { useCarrinho } from "@/components/carrinho/carrinho-provider";
 import { Button } from "@/components/ui/button";
 import { QUANTIDADE_MAXIMA } from "@/lib/carrinho";
@@ -11,48 +11,61 @@ import type { Produto } from "@/types";
 export function BotaoAdicionar({
   produto,
   className,
-  compacto = false,
 }: {
   produto: Produto;
   className?: string;
-  compacto?: boolean;
 }) {
-  const { itens, adicionar } = useCarrinho();
-  const [adicionado, setAdicionado] = useState(false);
-  const temporizador = useRef<ReturnType<typeof setTimeout> | undefined>(
-    undefined,
-  );
-  const limiteAtingido =
-    itens.find((item) => item.produto.id === produto.id)?.quantidade ===
-    QUANTIDADE_MAXIMA;
-  const texto = adicionado
-    ? "Adicionado!"
-    : limiteAtingido
-      ? "Limite de 99 unidades"
-      : "Adicionar ao carrinho";
-
-  useEffect(() => () => clearTimeout(temporizador.current), []);
+  const { itens, adicionar, alterarQuantidade } = useCarrinho();
+  const botaoAdicionar = useRef<HTMLButtonElement>(null);
+  const quantidade =
+    itens.find((item) => item.produto.id === produto.id)?.quantidade ?? 0;
 
   return (
-    <Button
-      type="button"
-      className={cn(
-        "h-auto min-h-12 min-w-12 py-2 whitespace-normal",
-        className,
+    <div className={cn("flex items-center gap-2", className)}>
+      {quantidade > 0 && (
+        <Button
+          type="button"
+          variant="outline"
+          size="icon"
+          className="min-h-12 min-w-12"
+          aria-label={`Diminuir quantidade de ${produto.nome}`}
+          onClick={() => {
+            if (quantidade === 1) botaoAdicionar.current?.focus();
+            alterarQuantidade(produto.id, quantidade - 1);
+          }}
+        >
+          <Minus aria-hidden="true" />
+        </Button>
       )}
-      disabled={limiteAtingido}
-      aria-label={`${texto} — ${produto.nome}`}
-      onClick={() => {
-        adicionar(produto);
-        setAdicionado(true);
-        clearTimeout(temporizador.current);
-        temporizador.current = setTimeout(() => setAdicionado(false), 1200);
-      }}
-    >
-      {adicionado ? <Check aria-hidden="true" /> : <Plus aria-hidden="true" />}
-      <span aria-live="polite">
-        {compacto && !adicionado && !limiteAtingido ? "Adicionar" : texto}
-      </span>
-    </Button>
+      <output
+        aria-live="polite"
+        className={
+          quantidade > 0 ? "flex-1 text-center tabular-nums" : "sr-only"
+        }
+      >
+        <span className="sr-only">
+          Quantidade de {produto.nome} no carrinho:{" "}
+        </span>
+        {quantidade}
+      </output>
+      <Button
+        ref={botaoAdicionar}
+        type="button"
+        className={cn(
+          "h-auto min-h-12 min-w-12 py-2 whitespace-normal",
+          quantidade === 0 && "flex-1",
+        )}
+        disabled={quantidade >= QUANTIDADE_MAXIMA}
+        aria-label={
+          quantidade === 0
+            ? `Adicionar ao carrinho — ${produto.nome}`
+            : `Aumentar quantidade de ${produto.nome}`
+        }
+        onClick={() => adicionar(produto)}
+      >
+        <Plus aria-hidden="true" />
+        {quantidade === 0 && "Adicionar ao carrinho"}
+      </Button>
+    </div>
   );
 }

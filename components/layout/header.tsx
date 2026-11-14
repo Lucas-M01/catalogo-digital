@@ -6,7 +6,7 @@ import { numeroWhatsApp } from "@/lib/env";
 
 export function Header() {
   return (
-    <header className="border-b bg-card">
+    <header className="sticky top-0 z-40 border-b bg-card">
       <div className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-2 md:px-6">
         <Link
           href="/"

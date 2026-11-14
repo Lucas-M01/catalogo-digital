@@ -9,28 +9,25 @@ type Props = { produto: Produto; preload: boolean };
 
 export function CardProduto({ produto, preload }: Props) {
   return (
-    <article className="flex h-full min-w-0 flex-col gap-2 rounded-lg border bg-card p-2 text-card-foreground transition-colors hover:border-primary/60">
+    <article className="flex h-full flex-col rounded-xl border bg-card text-card-foreground">
       <Link
         href={`/produto/${produto.slug}`}
         aria-labelledby={`produto-${produto.id}`}
-        className="group flex min-h-12 flex-1 flex-col gap-2 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
+        className="group flex min-h-12 flex-1 flex-col overflow-hidden rounded-[inherit] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-ring"
       >
-        <div className="relative aspect-square overflow-hidden rounded-lg bg-background">
+        <div className="relative aspect-[4/3] bg-muted">
           <Image
             {...imagemProduto(produto)}
             fill
             preload={preload}
-            sizes="(min-width: 72rem) 252px, (min-width: 64rem) calc(25vw - 36px), (min-width: 48rem) calc(33.33vw - 40px), calc(50vw - 34px)"
-            className="object-cover motion-safe:transition-transform motion-safe:duration-300 motion-safe:group-hover:scale-105"
+            sizes="(min-width: 72rem) 355.33px, (min-width: 64rem) calc((100vw - 80px) / 3 - 2px), (min-width: 48rem) calc(50vw - 34px), calc(100vw - 26px)"
+            className="object-cover"
           />
         </div>
-        <div className="flex flex-1 flex-col gap-1">
-          <p className="break-words text-[11px] uppercase tracking-wider text-muted-foreground">
-            {produto.categoria.nome}
-          </p>
+        <div className="flex flex-1 flex-col justify-between gap-2 p-4">
           <h3
             id={`produto-${produto.id}`}
-            className="flex-1 text-sm font-semibold [overflow-wrap:anywhere] md:text-base group-hover:underline"
+            className="font-semibold [overflow-wrap:anywhere] group-hover:underline"
           >
             {produto.nome}
           </h3>
@@ -40,11 +37,9 @@ export function CardProduto({ produto, preload }: Props) {
           />
         </div>
       </Link>
-      <BotaoAdicionar
-        produto={produto}
-        compacto
-        className="w-full text-xs font-bold"
-      />
+      <div className="px-4 pb-4">
+        <BotaoAdicionar produto={produto} className="w-full" />
+      </div>
     </article>
   );
 }

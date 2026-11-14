@@ -75,7 +75,7 @@ export default async function ProdutoPage({ params }: Props) {
             <ChevronRight aria-hidden="true" className="size-4" />
             <Link
               href={categoriaHref}
-              className="inline-flex min-h-12 items-center hover:text-primary-hover"
+              className="inline-flex min-h-12 items-center text-primary-hover hover:underline"
             >
               {produto.categoria.nome}
             </Link>
@@ -110,7 +110,7 @@ export default async function ProdutoPage({ params }: Props) {
             <h1 className="text-3xl font-bold tracking-tight [overflow-wrap:anywhere]">
               {produto.nome}
             </h1>
-            <p className="text-xs uppercase tracking-wider text-muted-foreground">
+            <p className="text-xs uppercase tracking-wider text-primary-hover">
               {produto.categoria.nome}
             </p>
           </div>
