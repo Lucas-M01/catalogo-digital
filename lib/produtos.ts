@@ -1,3 +1,4 @@
+import { cache } from "react";
 import { supabasePublico } from "@/lib/supabase/publico";
 import type { Categoria, Produto } from "@/types";
 
@@ -76,15 +77,17 @@ export async function getProdutos(): Promise<Produto[]> {
   return listarProdutos();
 }
 
-export async function getProdutoBySlug(slug: string): Promise<Produto | null> {
-  const { data, error } = await consultarProdutosDisponiveis()
-    .eq("slug", slug)
-    .maybeSingle()
-    .overrideTypes<LinhaProduto, { merge: false }>();
+export const getProdutoBySlug = cache(
+  async (slug: string): Promise<Produto | null> => {
+    const { data, error } = await consultarProdutosDisponiveis()
+      .eq("slug", slug)
+      .maybeSingle()
+      .overrideTypes<LinhaProduto, { merge: false }>();
 
-  if (error) throw new Error("Falha ao carregar produto");
-  return data ? paraProduto(data) : null;
-}
+    if (error) throw new Error("Falha ao carregar produto");
+    return data ? paraProduto(data) : null;
+  },
+);
 
 export async function getProdutosPorCategoria(
   categoriaSlug: string,

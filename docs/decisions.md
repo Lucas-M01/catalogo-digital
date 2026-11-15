@@ -81,4 +81,5 @@
 
 - A conversão do formulário considera o deslocamento fixo de Brasília (`-03:00`). O painel formata os instantes com `America/Fortaleza` no servidor, inclusive os valores iniciais da edição.
 - A sobreposição usa períodos com início inclusivo e fim exclusivo, com fim nulo representando duração indefinida. As Server Actions serializam criações e edições do mesmo produto dentro de cada processo. O esquema atual permite que processos distintos gravem ao mesmo tempo.
-- O resumo continua contando promoções pelo período de vigência. A home e a busca refletem a vigência na leitura. O detalhe usa o ISR de 300 segundos para mudanças agendadas e a revalidação sob demanda para gravações do painel.
+- O resumo continua contando promoções pelo período de vigência. A home e a busca refletem a vigência na leitura. Após a correção da expiração, o detalhe também é renderizado a cada acesso: o ISR de 300 segundos podia servir o preço promocional depois do fim. O cliente público continua sem cookies, e o layout, a página e seus metadados compartilham a consulta ao produto dentro da mesma requisição.
+- O skeleton da home fica no grupo `(inicio)`. No detalhe, o layout verifica se o produto existe antes de renderizar o skeleton da página, preservando o HTTP 404 de produtos ausentes.

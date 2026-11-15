@@ -7,20 +7,11 @@ import { BotaoAdicionar } from "@/components/carrinho/botao-adicionar";
 import { ListaProdutos } from "@/components/catalogo/lista-produtos";
 import { PrecoProduto } from "@/components/catalogo/preco-produto";
 import { imagemProduto } from "@/lib/imagem-produto";
-import {
-  getProdutoBySlug,
-  getProdutos,
-  getProdutosPorCategoria,
-} from "@/lib/produtos";
+import { getProdutoBySlug, getProdutosPorCategoria } from "@/lib/produtos";
 
 type Props = { params: Promise<{ slug: string }> };
 
-export const revalidate = 300;
-
-export async function generateStaticParams() {
-  const produtos = await getProdutos();
-  return produtos.map(({ slug }) => ({ slug }));
-}
+export const revalidate = 0;
 
 export async function generateMetadata(
   { params }: Props,
