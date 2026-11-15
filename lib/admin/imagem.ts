@@ -105,6 +105,26 @@ export async function converterImagem(arquivo: File): Promise<Blob> {
   }
 }
 
+function gerarUuidImagem(): string {
+  if (typeof crypto.randomUUID === "function") return crypto.randomUUID();
+
+  // O acesso por IP da rede via HTTP ainda disponibiliza getRandomValues.
+  const bytes = crypto.getRandomValues(new Uint8Array(16));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  const hex = Array.from(bytes, (byte) =>
+    byte.toString(16).padStart(2, "0"),
+  ).join("");
+
+  return [
+    hex.slice(0, 8),
+    hex.slice(8, 12),
+    hex.slice(12, 16),
+    hex.slice(16, 20),
+    hex.slice(20),
+  ].join("-");
+}
+
 export async function enviarImagem(arquivo: File): Promise<ImagemProduto> {
   const imagem = await converterImagem(arquivo).catch((erro: unknown) => {
     if (erro instanceof ErroImagem) throw erro;
@@ -112,7 +132,7 @@ export async function enviarImagem(arquivo: File): Promise<ImagemProduto> {
   });
 
   try {
-    const caminho = `${crypto.randomUUID()}.webp`;
+    const caminho = `${gerarUuidImagem()}.webp`;
     const bucket = criarClienteNavegador().storage.from("produtos");
     const { error } = await bucket.upload(caminho, imagem, {
       contentType: "image/webp",

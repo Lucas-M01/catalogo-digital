@@ -75,3 +75,4 @@
 - O canvas recebe a imagem com a orientação EXIF aplicada. A conversão começa em WebP com qualidade 0,8, reduz a qualidade em etapas e reduz as dimensões se necessário para respeitar 1 MiB.
 - O servidor valida o par de URL e caminho. Uma imagem legada só é aceita se os dois valores coincidirem com o registro atual. Quando a foto é alterada, a gravação confere o par anterior para evitar que edições concorrentes apaguem a imagem de outra gravação.
 - A remoção do objeto anterior ocorre depois da gravação no Postgres. Falhas de limpeza são registradas no servidor. Arquivos enviados sem salvar o produto podem ficar no bucket para limpeza manual.
+- O upload gera UUID v4 com `crypto.randomUUID()` quando disponível, e usa os bytes de `crypto.getRandomValues()` ao acessar o painel por IP da rede via HTTP.
