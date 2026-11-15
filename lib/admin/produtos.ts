@@ -3,7 +3,7 @@ import "server-only";
 import type { SupabaseClient } from "@supabase/supabase-js";
 import type { DadosProduto } from "@/lib/admin/schemas";
 import { gerarSlugDisponivel } from "@/lib/admin/slug";
-import type { ImagemProduto, ProdutoAdmin, Promocao } from "@/types";
+import type { ImagemProduto, Produto, ProdutoAdmin, Promocao } from "@/types";
 
 const camposProduto = `
   id, nome, slug, descricao, preco, imagem_url, imagem_path, disponivel, destaque, ordem,
@@ -230,4 +230,33 @@ export async function contarProdutos(supabase: SupabaseClient) {
     total: total.count,
     ocultos: ocultos.count,
   };
+}
+
+export async function buscarPrecoProduto(supabase: SupabaseClient, id: string) {
+  const { data, error } = await supabase
+    .from("produtos")
+    .select("preco")
+    .eq("id", id)
+    .maybeSingle()
+    .overrideTypes<{ preco: number | string }, { merge: false }>();
+  return { preco: data ? Number(data.preco) : null, falhou: Boolean(error) };
+}
+
+export async function listarOpcoesProduto(supabase: SupabaseClient) {
+  type LinhaOpcao = Pick<Produto, "id" | "nome"> & { preco: number | string };
+  const opcoes: Pick<Produto, "id" | "nome" | "preco">[] = [];
+  for (let inicio = 0; ; inicio += tamanhoPagina) {
+    const { data, error } = await supabase
+      .from("produtos")
+      .select("id,nome,preco")
+      .order("nome")
+      .order("id")
+      .range(inicio, inicio + tamanhoPagina - 1)
+      .overrideTypes<LinhaOpcao[], { merge: false }>();
+    if (error) return null;
+    opcoes.push(
+      ...data.map((produto) => ({ ...produto, preco: Number(produto.preco) })),
+    );
+    if (data.length < tamanhoPagina) return opcoes;
+  }
 }

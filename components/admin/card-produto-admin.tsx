@@ -4,6 +4,7 @@ import { BotaoExcluir } from "@/components/admin/botao-excluir";
 import { InterruptorDisponibilidade } from "@/components/admin/interruptor-disponibilidade";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { calcularStatus } from "@/lib/admin/promocoes";
 import { imagemProduto } from "@/lib/imagem-produto";
 import { formatarPreco } from "@/lib/whatsapp";
 import type { EstadoForm, ProdutoAdmin } from "@/types";
@@ -23,6 +24,11 @@ export function CardProdutoAdmin({
   excluir: ActionProduto;
 }) {
   const tituloId = `produto-admin-${produto.id}`;
+  const temPromocaoAtiva = produto.promocoes.some(
+    (promocao) =>
+      promocao.preco_promocional < produto.preco &&
+      calcularStatus(promocao) === "ativa",
+  );
 
   return (
     <article
@@ -48,7 +54,12 @@ export function CardProdutoAdmin({
           <p className="font-semibold tabular-nums">
             {formatarPreco(produto.preco)}
           </p>
-          {!produto.disponivel && <Badge variant="outline">Oculto</Badge>}
+          <div className="flex flex-wrap gap-1">
+            {!produto.disponivel && <Badge variant="outline">Oculto</Badge>}
+            {temPromocaoAtiva && (
+              <Badge variant="outline">Promoção ativa</Badge>
+            )}
+          </div>
         </div>
       </div>
       <InterruptorDisponibilidade
