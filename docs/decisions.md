@@ -98,3 +98,10 @@
 - A leitura converte os horários do Postgres de `HH:mm:ss` para `HH:mm` e valida o limite de dois intervalos por dia. O painel validará o limite também ao gravar, na Fase 8B. `getDadosLoja()` usa a configuração padrão de loja aberta se qualquer consulta falhar. Uma lista vazia lida com sucesso representa uma semana sem intervalos quando `usar_horarios` está ativo.
 - A migration 0005 mantém a transação usada nos arquivos anteriores e concede permissões explícitas à Data API além da RLS, como na 0002. [Documentação da Data API](https://supabase.com/docs/guides/api/securing-your-api)
 - O script de verificação importa a função com a extensão `.ts` para rodar com o suporte nativo do Node. O TypeScript aceita esse import com `allowImportingTsExtensions` e `noEmit`.
+
+## Fase 8B
+
+- A grade dos sete dias é enviada junta à RPC. A preferência de usar a grade e a pausa têm salvamentos próprios, cada um atualizando somente as colunas da sua seção.
+- A validação aceita intervalos adjacentes. Para comparar dois intervalos do mesmo dia, considera até a meia-noite quando o fechamento cai no dia seguinte.
+- A barra inferior reserva mais largura para os rótulos “Categorias” e “Promoções”. Os formulários preservam a edição após o envio, interceptando o reset nativo que levaria os interruptores do Radix aos valores iniciais.
+- A migration 0006 faz a RPC adquirir um bloqueio de escrita antes de substituir os horários. Envios simultâneos passam em sequência e as leituras podem continuar durante a gravação. [Documentação de LOCK do PostgreSQL](https://www.postgresql.org/docs/current/sql-lock.html)

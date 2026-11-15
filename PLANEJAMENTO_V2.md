@@ -565,12 +565,14 @@ export default nextConfig
 - [x] Definir os tipos e calcular o status em `America/Fortaleza`, incluindo virada de dia, fechamento manual e próxima abertura.
 - [x] Ler os dados pelo cliente público sem cookies. Em caso de falha em qualquer leitura, registrar o erro no servidor e assumir loja aberta.
 - [x] Verificar os cenários com instantes UTC fixos em `scripts/verificar-status-loja.ts`.
-- [ ] Executar apenas a migration 0005 no SQL Editor do Supabase e confirmar a aplicação antes da Fase 8B.
+- [x] Executar a migration 0005 no SQL Editor do Supabase. Aplicação confirmada pelo desenvolvedor.
 
 **8B — Admin**
 
-- [ ] Criar o formulário de horários e configurações de fechamento no painel.
-- [ ] Validar no servidor até dois intervalos por dia, aceitar a virada de meia-noite e gravar a semana pela RPC.
+- [x] Criar os formulários de horários e fechamento no painel e exibir o status no resumo.
+- [x] Validar horários, sobreposição, limite de dois intervalos e data de reabertura no servidor. Salvar a semana pela RPC.
+- [x] Validar na build de produção com Chromium em 320 e 375 px, Auth simulado e PostgreSQL local. Conferir as linhas após editar e reenviar a semana, os erros de campo e a rejeição de ações sem sessão.
+- [ ] Aplicar [`0006_serializar_salvar_horarios.sql`](supabase/migrations/0006_serializar_salvar_horarios.sql) no Supabase para serializar gravações simultâneas da semana.
 
 **8C — Site público**
 
