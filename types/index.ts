@@ -23,3 +23,24 @@ export type ItemCarrinho = {
   produto: Produto;
   quantidade: number;
 };
+
+export type Promocao = {
+  id: string;
+  produto_id: string;
+  preco_promocional: number;
+  inicio: string;
+  fim: string | null;
+};
+
+export type StatusPromocao = "ativa" | "agendada" | "expirada";
+
+export type ProdutoAdmin = Omit<Produto, "preco_promocional"> & {
+  imagem_path: string | null;
+  promocoes: Promocao[];
+};
+
+export type EstadoForm = {
+  ok: boolean;
+  mensagem?: string;
+  erros?: Record<string, string[] | undefined>;
+};
