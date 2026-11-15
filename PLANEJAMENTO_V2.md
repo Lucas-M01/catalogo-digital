@@ -541,6 +541,14 @@ export default nextConfig
 - [x] Testar com foto grande tirada no celular na build de produção, com Storage simulado
 - [ ] Conferir a troca e a exclusão de arquivos no painel do Supabase com a conta do dono
 
+**7E — Promoções**
+
+- [x] Lista agrupada em Ativas, Agendadas e Expiradas
+- [x] Criar e editar: produto, preço promocional, início e fim (opcional); datas em horário de Brasília
+- [x] Validar: preço menor que o normal, `fim` depois de `inicio`, sem sobreposição no mesmo produto
+- [x] Encerrar uma promoção agora (define `fim = agora`) e excluir
+- [x] Testar: promoção ativa aparece no catálogo e no pedido do WhatsApp com o preço correto na build de produção com Supabase simulado
+
 ---
 
 ## Checklist de Entrega (quando o projeto estiver pronto)

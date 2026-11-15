@@ -76,3 +76,9 @@
 - O servidor valida o par de URL e caminho. Uma imagem legada só é aceita se os dois valores coincidirem com o registro atual. Quando a foto é alterada, a gravação confere o par anterior para evitar que edições concorrentes apaguem a imagem de outra gravação.
 - A remoção do objeto anterior ocorre depois da gravação no Postgres. Falhas de limpeza são registradas no servidor. Arquivos enviados sem salvar o produto podem ficar no bucket para limpeza manual.
 - O upload gera UUID v4 com `crypto.randomUUID()` quando disponível, e usa os bytes de `crypto.getRandomValues()` ao acessar o painel por IP da rede via HTTP.
+
+## Fase 7E
+
+- A conversão do formulário considera o deslocamento fixo de Brasília (`-03:00`). O painel formata os instantes com `America/Fortaleza` no servidor, inclusive os valores iniciais da edição.
+- A sobreposição usa períodos com início inclusivo e fim exclusivo, com fim nulo representando duração indefinida. As Server Actions serializam criações e edições do mesmo produto dentro de cada processo. O esquema atual permite que processos distintos gravem ao mesmo tempo.
+- O resumo continua contando promoções pelo período de vigência. A home e a busca refletem a vigência na leitura. O detalhe usa o ISR de 300 segundos para mudanças agendadas e a revalidação sob demanda para gravações do painel.
