@@ -381,10 +381,10 @@ export function formatarPreco(valor: number): string {
 # WhatsApp — único obrigatório no momento
 NEXT_PUBLIC_NUMERO_WHATSAPP=5583999999999
 
-# Supabase — deixar comentado até ligar o banco
-# NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
-# NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
-# SUPABASE_SERVICE_ROLE_KEY=eyJ...
+# Supabase — obrigatório a partir da Fase 6
+NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...   # chave pública (anon / publishable, conforme o painel)
+# O admin usa a sessão do dono e as políticas de acesso do banco.
 ```
 
 ### `next.config.ts`
@@ -392,9 +392,7 @@ NEXT_PUBLIC_NUMERO_WHATSAPP=5583999999999
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  experimental: {
-    reactCompiler: true,
-  },
+  reactCompiler: true,
   images: {
     remotePatterns: [
       // Unsplash — usado nas imagens do mock
@@ -402,12 +400,13 @@ const nextConfig: NextConfig = {
         protocol: "https",
         hostname: "images.unsplash.com",
       },
-      // Supabase Storage — descomentar quando ligar o banco
-      // {
-      //   protocol: "https",
-      //   hostname: "*.supabase.co",
-      // },
-      // Cloudinary — descomentar se adicionar painel admin
+      // Supabase Storage — Fase 6 (trocar pelo host real do projeto)
+      {
+        protocol: "https",
+        hostname: "xxxx.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+      // Cloudinary — só se o Storage deixar de bastar (transformações pesadas de imagem)
       // {
       //   protocol: "https",
       //   hostname: "res.cloudinary.com",
@@ -492,7 +491,7 @@ export default nextConfig
 - [x] `lib/supabase/publico.ts` (anon, sem cookies)
 - [x] Reescrever `lib/produtos.ts` com o Supabase, resolvendo a promoção ativa em `preco_promocional` (código em `ARQUITETURA_V2.md`)
 - [x] `next.config.ts`: liberar o host do Storage em `remotePatterns`
-- [x] `export const revalidate = 300` em `/` e `/produto/[slug]`
+- [x] Configurar revalidação para o catálogo. Desde a correção da 7E, o detalhe consulta a vigência da promoção em cada visita.
 - [x] Criar `app/api/keepalive/route.ts`
 - [ ] Configurar cron externo para chamar `/api/keepalive` a cada 3 dias
 - [x] Validar com `pnpm build && pnpm start`: catálogo igual ao do mock; busca, filtros, detalhe, not-found e preços promocionais no card e na mensagem do WhatsApp
@@ -549,6 +548,15 @@ export default nextConfig
 - [x] Encerrar uma promoção agora (define `fim = agora`) e excluir
 - [x] Testar: promoção ativa aparece no catálogo e no pedido do WhatsApp com o preço correto na build de produção com Supabase simulado
 
+**7F — Fechamento**
+
+- [x] Auditar as páginas, as actions, a separação entre loja e painel e os arquivos de configuração
+- [x] Revisar os formulários: carregamento, confirmações, erros em português e foco no primeiro campo com erro. Validar as telas em 320 e 375 px com Chromium.
+- [ ] Teste completo no celular do dono: criar produto com foto, ocultar, agendar promoção
+- [x] Rodar o fluxo de auth em `pnpm build && pnpm start` com Supabase simulado, incluindo requisições às actions sem sessão
+- [x] Documentar o fluxo do dono e o roteiro de teste no celular em [docs/ADMIN.md](docs/ADMIN.md)
+- [ ] Conferir no Supabase que o cadastro público continua desabilitado e que as políticas de escrita são só `to authenticated`
+
 ---
 
 ## Checklist de Entrega (quando o projeto estiver pronto)
@@ -558,6 +566,10 @@ export default nextConfig
 - [ ] Layout aprovado no celular
 - [ ] Performance acima de 85 no PageSpeed Mobile
 - [ ] Domínio configurado (se tiver)
+- [ ] Dono da loja consegue, sozinho e pelo celular, criar produto com foto, ocultar produto e agendar promoção
+- [ ] Cadastro público do Supabase desabilitado e usuário do dono com senha forte
+- [x] `/admin` e Server Actions rejeitam acesso sem login na build de produção local com Supabase simulado
+- [ ] Fluxo de login e `revalidatePath` testados no ambiente de produção (Cloudflare)
 
 ---
 

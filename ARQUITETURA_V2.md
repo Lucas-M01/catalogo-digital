@@ -62,21 +62,53 @@ app/           → importa de lib/, components/ e types/
 catalogo-digital/
 │
 ├── app/
-│   ├── layout.tsx                    # RootLayout — CarrinhoProvider, fonte, lang="pt-BR"
-│   ├── page.tsx                      # Página inicial — lista produtos com categorias
+│   ├── layout.tsx                    # RootLayout — só html (lang="pt-BR"), body, fonte e tema
 │   ├── not-found.tsx                 # Página 404 personalizada
 │   ├── error.tsx                     # Error boundary de rota
-│   ├── loading.tsx                   # Skeleton global (fallback de Suspense)
+│   ├── robots.ts                     # Disallow: /admin
 │   │
-│   ├── produto/
-│   │   └── [slug]/
-│   │       ├── page.tsx              # Página individual do produto
-│   │       ├── loading.tsx           # Skeleton da página de produto
-│   │       └── not-found.tsx         # 404 do produto
+│   ├── (loja)/                       # Site público — as URLs não mudam
+│   │   ├── layout.tsx                # CarrinhoProvider + Header + Footer
+│   │   ├── error.tsx                 # Erro de uma rota pública
+│   │   ├── not-found.tsx             # 404 sob o layout da loja
+│   │   ├── (inicio)/
+│   │   │   ├── page.tsx              # Home com filtro por categoria
+│   │   │   └── loading.tsx           # Skeleton da home
+│   │   ├── produto/
+│   │   │   └── [slug]/
+│   │   │       ├── layout.tsx        # Garante o HTTP 404 antes de renderizar
+│   │   │       ├── page.tsx          # Página individual do produto
+│   │   │       └── loading.tsx       # Skeleton da página de produto
+│   │   └── busca/
+│   │       ├── page.tsx              # Busca com filtros — lê searchParams
+│   │       └── loading.tsx           # Skeleton da busca
 │   │
-│   └── busca/
-│       ├── page.tsx                  # Busca com filtros — lê searchParams
-│       └── loading.tsx               # Skeleton da busca
+│   ├── (admin)/admin/                # Painel do dono da loja
+│   │   ├── login/
+│   │   │   ├── page.tsx              # Login (fora do layout com navegação)
+│   │   │   └── actions.ts            # entrar()
+│   │   └── (painel)/
+│   │       ├── layout.tsx            # exigirAdmin() + navegação + noindex
+│   │       ├── page.tsx              # Resumo
+│   │       ├── actions.ts            # sair()
+│   │       ├── produtos/
+│   │       │   ├── page.tsx          # Lista em cards
+│   │       │   ├── novo/page.tsx
+│   │       │   ├── [id]/page.tsx     # Edição
+│   │       │   ├── not-found.tsx
+│   │       │   └── actions.ts        # criarProduto, atualizarProduto, alternarDisponivel, excluirProduto
+│   │       ├── categorias/
+│   │       │   ├── page.tsx
+│   │       │   └── actions.ts
+│   │       └── promocoes/
+│   │           ├── page.tsx          # Ativas · Agendadas · Expiradas
+│   │           ├── nova/page.tsx     # Aceita ?produto=<id>
+│   │           ├── [id]/page.tsx     # Edição
+│   │           ├── not-found.tsx
+│   │           └── actions.ts       # criar, atualizar, encerrar, excluir
+│   │
+│   └── api/
+│       └── keepalive/route.ts        # Evita a pausa do Supabase Free
 │
 ├── components/
 │   │
@@ -88,7 +120,12 @@ catalogo-digital/
 │   │   ├── scroll-area.tsx
 │   │   ├── separator.tsx
 │   │   ├── skeleton.tsx              # Usado nos loading states
-│   │   └── sheet.tsx                 # Alternativa ao drawer
+│   │   ├── sheet.tsx                 # Alternativa ao drawer
+│   │   ├── label.tsx                 # Fase 7
+│   │   ├── textarea.tsx              # Fase 7
+│   │   ├── select.tsx                # Fase 7
+│   │   ├── switch.tsx                # Fase 7
+│   │   └── alert-dialog.tsx          # Fase 7 — confirmação de exclusão
 │   │
 │   ├── catalogo/
 │   │   ├── lista-produtos.tsx        # Server Component — grid de cards
@@ -107,27 +144,63 @@ catalogo-digital/
 │   │   ├── resumo-carrinho.tsx       # 'use client' — total + botão WhatsApp
 │   │   └── botao-whatsapp.tsx        # 'use client' — monta mensagem e abre wa.me
 │   │
-│   └── layout/
-│       ├── header.tsx                # Server Component — logo + ícone do carrinho
-│       ├── icone-carrinho.tsx        # 'use client' — ícone com contador de itens
-│       └── footer.tsx                # Server Component — info da loja
+│   ├── layout/
+│   │   ├── header.tsx                # Server Component — logo + ícone do carrinho
+│   │   ├── icone-carrinho.tsx        # 'use client' — ícone com contador de itens
+│   │   └── footer.tsx                # Server Component — info da loja
+│   │
+│   └── admin/                        # Fase 7
+│       ├── navegacao-admin.tsx       # Barra inferior (mobile) / lateral (desktop)
+│       ├── form-login.tsx            # 'use client' — useActionState
+│       ├── form-categoria.tsx        # 'use client'
+│       ├── form-produto.tsx          # 'use client' — recebe `action` por props
+│       ├── form-promocao.tsx         # 'use client'
+│       ├── upload-imagem.tsx         # 'use client' — redimensiona e envia ao Storage
+│       ├── card-produto-admin.tsx    # Server Component (+ interruptor de disponível)
+│       ├── botao-excluir.tsx         # 'use client' — AlertDialog de confirmação
+│       ├── card-promocao.tsx
+│       ├── form-encerrar-promocao.tsx
+│       ├── form-sair.tsx
+│       ├── interruptor-disponibilidade.tsx
+│       ├── feedback-admin.tsx        # Confirmações de operação
+│       └── use-foco-erro.ts          # Move o foco após erro de formulário
 │
 ├── lib/
-│   ├── mock/
-│   │   └── produtos.ts               # ← DADOS MOCK — 10 produtos, 4 categorias
-│   │
-│   ├── produtos.ts                   # getProdutos, getProdutoBySlug, buscarProdutos...
+│   ├── env.ts                        # Variáveis de ambiente validadas com Zod
+│   ├── produtos.ts                   # Leitura pública: getProdutos, getProdutoBySlug, buscarProdutos...
 │   ├── whatsapp.ts                   # gerarLinkWhatsApp — puro e testável
-│   └── utils.ts                      # formatarPreco, gerarSlug, cn (tailwind-merge)
+│   ├── utils.ts                      # cn para classes CSS
+│   │
+│   ├── supabase/                     # Fase 6 e 7
+│   │   ├── publico.ts                # anon, sem cookies — leitura pública
+│   │   ├── servidor.ts               # @supabase/ssr com cookies — só admin
+│   │   ├── navegador.ts              # createBrowserClient — só upload de imagem
+│   │   └── sessao.ts                 # atualizarSessao() usada pelo proxy.ts
+│   │
+│   └── admin/                        # Fase 7 — tudo com `import "server-only"` (exceto imagem.ts)
+│       ├── auth.ts                   # exigirAdmin()
+│       ├── produtos.ts               # queries e mutações de produtos
+│       ├── categorias.ts
+│       ├── promocoes.ts              # inclui calcularStatus() e checagem de sobreposição
+│       ├── schemas.ts                # schemas Zod compartilhados pelas actions
+│       ├── preco.ts                  # "22,90" → 22.9
+│       ├── datas.ts                  # Converte e formata horários de Brasília
+│       ├── slug.ts                   # slugify + tratamento de colisão
+│       ├── imagem.ts                 # ← roda no NAVEGADOR: valida, redimensiona, converte para WebP
+│       └── revalidar.ts              # revalidarCatalogo()
 │
 ├── types/
-│   └── index.ts                      # Produto, Categoria, ItemCarrinho
+│   └── index.ts                      # Produto, Categoria, ItemCarrinho, Promocao, ProdutoAdmin, EstadoForm
+│
+├── proxy.ts                          # Renova a sessão e redireciona /admin/* (matcher só /admin)
+├── supabase/
+│   └── migrations/                   # 0001_schema · 0002_rls · 0003_storage · 0004_seed (SQL em PLANEJAMENTO_V2.md)
 │
 ├── biome.json
 ├── next.config.ts
 ├── tailwind.config.ts                # Tokens de cor, fonte e breakpoints do projeto
 ├── components.json                   # Configuração do shadcn/ui
-└── .env.local                        # NEXT_PUBLIC_NUMERO_WHATSAPP (único obrigatório agora)
+└── .env.local                        # WhatsApp + NEXT_PUBLIC_SUPABASE_URL / ANON_KEY (sem service_role)
 ```
 
 ---
@@ -193,66 +266,16 @@ export type ItemCarrinho = {
 
 ### `lib/utils.ts`
 
-```typescript
-import { clsx, type ClassValue } from "clsx"
-import { twMerge } from "tailwind-merge"
+Exporta `cn()` para combinar classes CSS. `formatarPreco()` é exportada por `lib/whatsapp.ts` e a geração de slug fica em `lib/admin/slug.ts`.
 
-// Função padrão do shadcn/ui — combina classes Tailwind sem conflito
-export function cn(...inputs: ClassValue[]) {
-  return twMerge(clsx(inputs))
-}
+### `lib/produtos.ts`
 
-export function formatarPreco(valor: number): string {
-  return valor.toLocaleString("pt-BR", { style: "currency", currency: "BRL" })
-}
+A leitura usa o cliente público do Supabase e retorna apenas produtos disponíveis. O preço promocional vigente é mapeado para `preco_promocional` do tipo `Produto`.
 
-export function gerarSlug(texto: string): string {
-  return texto
-    .toLowerCase()
-    .normalize("NFD")
-    .replace(/[\u0300-\u036f]/g, "")
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "")
-}
-```
-
-### `lib/produtos.ts` — hoje usa mock, amanhã usa Supabase
-
-```typescript
-// Para migrar para Supabase: substituir as importações abaixo
-// pelos clientes do Supabase. Nenhum componente muda.
-
-import { produtosMock, categoriasMock } from "@/lib/mock/produtos"
-import type { Produto, Categoria } from "@/types"
-
-export async function getProdutos(): Promise<Produto[]> {
-  return produtosMock.filter((p) => p.disponivel)
-}
-
-export async function getProdutoBySlug(slug: string): Promise<Produto | null> {
-  return produtosMock.find((p) => p.slug === slug && p.disponivel) ?? null
-}
-
-export async function getProdutosPorCategoria(categoriaSlug: string): Promise<Produto[]> {
-  return produtosMock.filter(
-    (p) => p.disponivel && p.categoria.slug === categoriaSlug
-  )
-}
-
-export async function getCategorias(): Promise<Categoria[]> {
-  return categoriasMock.sort((a, b) => a.ordem - b.ordem)
-}
-
-export async function buscarProdutos(query: string, categoriaSlug?: string): Promise<Produto[]> {
-  const q = query.toLowerCase()
-  return produtosMock.filter((p) => {
-    const matchNome = p.nome.toLowerCase().includes(q)
-    const matchDesc = p.descricao?.toLowerCase().includes(q) ?? false
-    const matchCategoria = categoriaSlug ? p.categoria.slug === categoriaSlug : true
-    return p.disponivel && (matchNome || matchDesc) && matchCategoria
-  })
-}
-```
+- `getProdutos()` e `getProdutosPorCategoria(categoriaSlug)` fornecem as listas públicas.
+- `getProdutoBySlug(slug)` retorna `Produto | null` e compartilha a leitura dentro da mesma requisição.
+- `getCategorias()` ordena as categorias por ordem e slug.
+- `buscarProdutos(query, categoriaSlug?, apenasPromocao = false)` filtra por nome e descrição, ignorando acentos, e permite mostrar apenas promoções.
 
 ### `lib/whatsapp.ts`
 
@@ -534,172 +557,192 @@ export function Categorias({ categorias, categoriaAtiva }: Props) {
 
 | Rota | Estratégia | Motivo |
 |---|---|---|
-| `/` | Server Component padrão | Lê do mock — sem necessidade de cache |
-| `/produto/[slug]` | Server Component + `generateStaticParams` | Gera todas as páginas na build |
-| `/busca` | Server Component com `searchParams` | Filtra por query string |
+| `/` | Server Component dinâmico com `searchParams` | Aplica o filtro de categoria e consulta o catálogo pelo cliente público |
+| `/produto/[slug]` | Server Component com `revalidate = 0` | Confere a vigência da promoção a cada visita |
+| `/busca` | Server Component dinâmico com `searchParams` | Aplica os filtros da URL |
+| `/admin/*` | Dinâmico com cookies de sessão | O painel verifica a sessão a cada página e action protegida |
 
-> Quando o Supabase entrar: adicionar `revalidate = 300` em `/` e `/produto/[slug]`.
+O catálogo usa o cliente público sem cookies. As mutações do painel continuam chamando `revalidarCatalogo()`.
 
 ### `app/layout.tsx`
 
-```typescript
-import type { Metadata } from "next"
-import { CarrinhoProvider } from "@/components/carrinho/carrinho-provider"
-import { Header } from "@/components/layout/header"
-import { Footer } from "@/components/layout/footer"
+O layout raiz define idioma, fonte e tema. [O layout da loja](app/(loja)/layout.tsx) fornece o carrinho, cabeçalho, rodapé e contêiner do conteúdo.
 
-export const metadata: Metadata = {
-  title: "Cardápio Digital",
-  description: "Faça seu pedido e envie pelo WhatsApp.",
+### `app/(loja)/(inicio)/page.tsx`
+
+`HomePage({ searchParams }: PageProps<"/">)` lê a categoria da URL e lista os produtos disponíveis. O skeleton está no mesmo grupo.
+
+### `app/(loja)/produto/[slug]/page.tsx`
+
+`ProdutoPage({ params }: { params: Promise<{ slug: string }> })` mostra o preço vigente, a descrição e produtos relacionados. O layout contém a verificação de existência antes do skeleton. A página, o layout e os metadados compartilham `getProdutoBySlug()` durante a requisição.
+
+### `app/(loja)/busca/page.tsx`
+
+`BuscaPage({ searchParams })` lê `q`, `categoria` e `promocao` da URL. Busca as categorias e os produtos com `buscarProdutos(q, categoria, apenasPromocao)` e entrega os filtros e a lista ao componente de busca.
+
+---
+
+## Admin — Fases 6 e 7
+
+### Fluxo
+
+```
+Dono → /admin/login → Server Action entrar() → cookie de sessão (@supabase/ssr)
+     → páginas admin (Server Components, exigirAdmin())
+     → formulários (Client Components, useActionState)
+     → Server Actions (exigirAdmin → Zod → lib/admin → revalidarCatalogo)
+     → Supabase com a sessão do dono (RLS `to authenticated`)
+```
+
+### Segurança em camadas
+
+| Camada | O que faz | Basta sozinha? |
+|---|---|---|
+| Cadastro público desabilitado | Só o dono existe como usuário | Não, mas é pré-requisito das políticas abaixo |
+| `proxy.ts` | Renova a sessão e redireciona quem não está logado | **Não** — é conveniência, não segurança |
+| `exigirAdmin()` em cada página e action protegida | Confere o usuário com `getUser()` | Sim, para a aplicação |
+| RLS (`to authenticated`) | Só a sessão do dono escreve no banco e no Storage | Última barreira, no banco |
+
+> Server Actions são endpoints públicos: qualquer um pode chamá-las com `fetch`. Por isso `exigirAdmin()` é a **primeira instrução** de cada action protegida. `entrar()` valida as credenciais com Zod e inicia a sessão com `signInWithPassword()`. Layouts não são re-renderizados a cada navegação, então a checagem também vai em cada página, não só no layout.
+
+### Três clientes Supabase
+
+| Arquivo | Chave | Cookies | Uso |
+|---|---|---|---|
+| `lib/supabase/publico.ts` | anon | Não | Leitura pública sem acesso à sessão administrativa |
+| `lib/supabase/servidor.ts` | anon + sessão do dono | Sim | Páginas e actions do admin |
+| `lib/supabase/navegador.ts` | anon + sessão do dono | Sim | Somente o upload de imagem |
+
+Nenhum usa `service_role`.
+
+`lerEnvSupabase()`, em `lib/env.ts`, valida as duas variáveis públicas. `publico.ts` exporta `supabasePublico` sem persistência de sessão. `criarClienteServidor()` é assíncrona e integra os cookies do Next ao cliente Supabase. `criarClienteNavegador()` devolve o cliente para upload com a sessão do dono.
+
+```typescript
+// proxy.ts (Next 16: o antigo "middleware" agora se chama "proxy")
+import type { NextRequest } from "next/server"
+import { atualizarSessao } from "@/lib/supabase/sessao"
+
+export function proxy(request: NextRequest) {
+  return atualizarSessao(request)
 }
 
-export default function RootLayout({ children }: { children: React.ReactNode }) {
-  return (
-    <html lang="pt-BR">
-      <body className="min-h-screen bg-gray-50 flex flex-col">
-        <CarrinhoProvider>
-          <Header />
-          <main className="flex-1 container mx-auto px-4 py-6 max-w-5xl">
-            {children}
-          </main>
-          <Footer />
-        </CarrinhoProvider>
-      </body>
-    </html>
-  )
+export const config = { matcher: ["/admin/:path*"] }
+```
+
+`lib/supabase/sessao.ts` segue o template oficial do `@supabase/ssr` para Next.js (consultar o Context7): cria o cliente a partir dos cookies da requisição, confere o usuário, **redireciona para `/admin/login`** se não houver sessão e a rota não for a de login, e **redireciona para `/admin`** se já houver sessão e a rota for a de login. O matcher cobre só `/admin`, então o site público não paga esse custo.
+
+`exigirAdmin()`, em `lib/admin/auth.ts`, verifica `getUser()` e devolve `{ supabase, user }`. Uma sessão ausente ou inválida redireciona para `/admin/login`. O resultado é compartilhado apenas dentro da renderização atual.
+
+### Padrão de Server Action
+
+```typescript
+// app/(admin)/admin/(painel)/categorias/actions.ts
+"use server"
+
+import { z } from "zod"
+import { exigirAdmin } from "@/lib/admin/auth"
+import { inserirCategoria } from "@/lib/admin/categorias"
+import { revalidarCatalogo } from "@/lib/admin/revalidar"
+import type { EstadoForm } from "@/types"
+
+const schema = z.object({
+  nome: z.string().trim().min(1, "Informe o nome").max(60, "Máximo de 60 caracteres"),
+  ordem: z.string("Informe a ordem.").trim().regex(/^\d{1,3}$/, "Informe um número inteiro de 0 a 999.").transform(Number),
+})
+
+export async function criarCategoria(
+  _estado: EstadoForm,
+  formData: FormData
+): Promise<EstadoForm> {
+  const { supabase } = await exigirAdmin()                 // 1. autorização
+
+  const dados = schema.safeParse(Object.fromEntries(formData)) // 2. validação
+  if (!dados.success) {
+    // Zod 4: z.flattenError(dados.error).fieldErrors · Zod 3: dados.error.flatten().fieldErrors
+    return { ok: false, erros: z.flattenError(dados.error).fieldErrors }
+  }
+
+  const resultado = await inserirCategoria(supabase, dados.data) // 3. escrita
+  if (!resultado.ok) return { ok: false, mensagem: resultado.mensagem }
+
+  revalidarCatalogo()                                      // 4. cache
+  return { ok: true, mensagem: "Categoria criada." }
 }
 ```
 
-### `app/page.tsx`
+`inserirCategoria(supabase, dados)` usa `gerarSlugDisponivel(supabase, "categorias", dados.nome)` para procurar sufixos livres. Se uma gravação concorrente usar o mesmo slug, consulta novamente antes de tentar inserir.
 
 ```typescript
-import { getProdutos, getCategorias } from "@/lib/produtos"
-import { ListaProdutos } from "@/components/catalogo/lista-produtos"
-import { Categorias } from "@/components/catalogo/categorias"
+// lib/admin/revalidar.ts
+import "server-only"
+import { revalidatePath } from "next/cache"
 
-export default async function HomePage() {
-  const [produtos, categorias] = await Promise.all([
-    getProdutos(),
-    getCategorias(),
-  ])
-
-  return (
-    <div className="flex flex-col gap-6">
-      <Categorias categorias={categorias} />
-      <ListaProdutos produtos={produtos} />
-    </div>
-  )
+// Catálogo pequeno: invalidar tudo é mais simples e seguro que listar rotas.
+export function revalidarCatalogo() {
+  revalidatePath("/", "layout")
 }
 ```
 
-### `app/produto/[slug]/page.tsx`
+`FormCategoria({ action, categoria, campo })` usa `useActionState()` para enviar os dados e controlar o estado de envio. `useFocoErro(estado, pendente)` aponta o foco para o primeiro campo inválido. Sucessos são informados em `<output>` e erros identificados por `role="alert"` e `aria-describedby`.
+
+Regras do padrão: `FormData` entra como `unknown` e só vira dado tipado depois do Zod; erro de validação é **retorno**, não exceção; mensagem do Supabase nunca vai crua para a tela; a página (Server Component) importa a action e passa por props.
+
+### Preço, slug e datas
+
+- **Preço:** `lib/admin/preco.ts` converte texto pt-BR para número (`"1.234,50"` → `1234.5`) e rejeita o que não for número válido, negativo ou acima de `99999999.99`. Usado em produtos e promoções.
+- **Slug:** gerado na criação por `gerarSlugDisponivel()` de `lib/admin/slug.ts`, com `slugify`. Colisões recebem `-2`, `-3` e assim por diante. A restrição de unicidade cobre gravações concorrentes. A edição mantém o slug original.
+- **Datas de promoção:** o formulário usa `datetime-local`; o servidor interpreta como horário de Brasília (`-03:00`, sem horário de verão) e grava `timestamptz`.
+
+### Imagens
+
+1. `components/admin/upload-imagem.tsx` (client) recebe o arquivo (galeria ou câmera).
+2. `lib/admin/imagem.ts` valida o tipo (JPEG, PNG, WebP) e o tamanho de origem (máx. 8 MB), redimensiona para no máximo 1200 px no lado maior e converte para WebP (~qualidade 0,8) via canvas. O bucket aceita até 1 MB.
+3. Envia direto ao bucket `produtos` como `<uuid>.webp` com o cliente do navegador (sessão do dono). Isso evita o limite de corpo das Server Actions e do Worker.
+4. Preenche dois campos ocultos: `imagem_url` (URL pública) e `imagem_path` (`<uuid>.webp`).
+5. A action **valida**: `imagem_url` deve começar com `${NEXT_PUBLIC_SUPABASE_URL}/storage/v1/object/public/produtos/` e `imagem_path` deve casar com `^[0-9a-f-]{36}\.webp$`. Sem isso, qualquer URL poderia ser gravada.
+6. Ao trocar a imagem ou excluir o produto, a action remove o arquivo antigo do Storage (depois que o banco confirmou a escrita).
+7. Imagens enviadas e nunca salvas ficam órfãs. Aceitável no MVP; limpeza manual pelo painel do Supabase se necessário.
+
+### Promoções
 
 ```typescript
-import { getProdutoBySlug, getProdutos } from "@/lib/produtos"
-import { notFound } from "next/navigation"
-import Image from "next/image"
-import type { Metadata } from "next"
-import { formatarPreco } from "@/lib/utils"
-import { BotaoAdicionar } from "@/components/carrinho/botao-adicionar"
+// lib/admin/promocoes.ts (trechos)
+import type { Promocao, StatusPromocao } from "@/types"
 
-type Props = { params: Promise<{ slug: string }> }
-
-// Gera todas as páginas de produto na build
-export async function generateStaticParams() {
-  const produtos = await getProdutos()
-  return produtos.map((p) => ({ slug: p.slug }))
-}
-
-export async function generateMetadata({ params }: Props): Promise<Metadata> {
-  const { slug } = await params
-  const produto = await getProdutoBySlug(slug)
-  if (!produto) return {}
-  return { title: produto.nome, description: produto.descricao ?? undefined }
-}
-
-export default async function ProdutoPage({ params }: Props) {
-  const { slug } = await params
-  const produto = await getProdutoBySlug(slug)
-  if (!produto) notFound()
-
-  const preco = produto.preco_promocional ?? produto.preco
-
-  return (
-    // Stack no mobile, lado a lado no desktop
-    <div className="flex flex-col gap-6 md:flex-row md:items-start md:gap-10">
-      {/* Imagem */}
-      <div className="relative aspect-square w-full md:w-1/2 rounded-xl overflow-hidden">
-        {produto.imagem_url ? (
-          <Image
-            src={produto.imagem_url}
-            alt={produto.nome}
-            fill
-            priority
-            className="object-cover"
-          />
-        ) : (
-          <div className="w-full h-full bg-gray-100" />
-        )}
-      </div>
-
-      {/* Informações */}
-      <div className="flex flex-col gap-4 md:flex-1">
-        <div>
-          <span className="text-sm text-gray-500">{produto.categoria.nome}</span>
-          <h1 className="text-2xl font-bold mt-1">{produto.nome}</h1>
-        </div>
-
-        {produto.descricao && (
-          <p className="text-gray-600 text-sm leading-relaxed">{produto.descricao}</p>
-        )}
-
-        <div className="flex flex-col">
-          {produto.preco_promocional && (
-            <span className="text-sm text-gray-400 line-through">
-              {formatarPreco(produto.preco)}
-            </span>
-          )}
-          <span className="text-2xl font-bold text-green-700">
-            {formatarPreco(preco)}
-          </span>
-        </div>
-
-        {/* Botão largo no mobile */}
-        <BotaoAdicionar produto={produto} className="w-full md:w-auto" />
-      </div>
-    </div>
-  )
+export function calcularStatus(p: Pick<Promocao, "inicio" | "fim">, agora = new Date()): StatusPromocao {
+  if (new Date(p.inicio) > agora) return "agendada"
+  if (p.fim && new Date(p.fim) <= agora) return "expirada"
+  return "ativa"
 }
 ```
 
-### `app/busca/page.tsx`
+Validações na action (não dá para expressar no banco): preço promocional **menor** que o preço do produto; `fim` depois de `inicio`; **sem sobreposição** para o mesmo produto — existe conflito quando `inicio_novo < fim_existente` (ou o existente não tem fim) **e** `fim_novo > inicio_existente` (ou o novo não tem fim). "Encerrar agora" grava `fim = now()`. O site usa o menor preço entre as promoções ativas, como defesa extra.
 
-```typescript
-import { buscarProdutos, getCategorias } from "@/lib/produtos"
-import { ListaProdutos } from "@/components/catalogo/lista-produtos"
-import { Categorias } from "@/components/catalogo/categorias"
-import { Filtros } from "@/components/catalogo/filtros"
+### Telas (mobile first)
 
-type Props = {
-  searchParams: Promise<{ q?: string; categoria?: string }>
-}
+| Rota | Conteúdo |
+|---|---|
+| `/admin/login` | E-mail e senha; erro genérico "E-mail ou senha incorretos" |
+| `/admin` | Contagens (produtos, ocultos, promoções ativas) e atalhos |
+| `/admin/produtos` | Cards com foto, nome, preço, categoria e interruptor de disponível; busca por nome |
+| `/admin/produtos/novo` · `/admin/produtos/[id]` | Formulário com upload de imagem. A exclusão com confirmação fica na lista |
+| `/admin/categorias` | Lista, criar, renomear, reordenar; excluir bloqueado se houver produtos |
+| `/admin/promocoes` | Ativas, Agendadas e Expiradas, com atalhos para criar, editar, encerrar e excluir |
+| `/admin/promocoes/nova` · `/admin/promocoes/[id]` | Formulários em horário de Brasília. A criação aceita `?produto=<id>` |
 
-export default async function BuscaPage({ searchParams }: Props) {
-  const { q = "", categoria } = await searchParams
-  const [produtos, categorias] = await Promise.all([
-    buscarProdutos(q, categoria),
-    getCategorias(),
-  ])
+Navegação: barra inferior fixa no mobile (Produtos · Categorias · Promoções · Sair), lateral no `lg:`. Tabelas só a partir de `lg:`.
 
-  return (
-    <div className="flex flex-col gap-6">
-      <Filtros q={q} categoriaAtiva={categoria} />
-      <Categorias categorias={categorias} categoriaAtiva={categoria} />
-      <ListaProdutos produtos={produtos} />
-    </div>
-  )
-}
-```
+### Quem é `'use client'` no admin
+
+| Componente | Motivo |
+|---|---|
+| `form-login`, `form-categoria`, `form-produto`, `form-promocao` | `useActionState` e foco no primeiro campo inválido com `useFocoErro` |
+| `form-sair`, `form-encerrar-promocao` | Estado do envio e mensagens de falha |
+| `upload-imagem.tsx` | Arquivo, canvas, prévia e upload pelo navegador |
+| `botao-excluir.tsx` | Estado do `AlertDialog` |
+| Interruptor de disponível | `onChange` que chama a action |
+
+Tudo o mais (páginas, layout, cards, navegação) é Server Component.
 
 ---
 
@@ -788,7 +831,7 @@ mkdir -p components/{ui,catalogo,carrinho,layout} lib/mock types
 # lib/mock/produtos.ts → 10 produtos de exemplo
 # lib/produtos.ts → funções que leem do mock
 # lib/whatsapp.ts → gerarLinkWhatsApp
-# lib/utils.ts → cn, formatarPreco, gerarSlug
+# lib/utils.ts → cn
 
 # 8. Configurar .env.local
 echo "NEXT_PUBLIC_NUMERO_WHATSAPP=5583999999999" > .env.local
@@ -800,18 +843,20 @@ echo "NEXT_PUBLIC_NUMERO_WHATSAPP=5583999999999" > .env.local
 import type { NextConfig } from "next"
 
 const nextConfig: NextConfig = {
-  experimental: {
-    reactCompiler: true,
-  },
+  reactCompiler: true,
   images: {
     remotePatterns: [
       {
         protocol: "https",
         hostname: "images.unsplash.com", // imagens do mock
       },
-      // Supabase Storage — descomentar quando ligar o banco
-      // { protocol: "https", hostname: "*.supabase.co" },
-      // Cloudinary — descomentar se adicionar painel admin
+      // Supabase Storage — Fase 6 (trocar pelo host real do projeto)
+      {
+        protocol: "https",
+        hostname: "xxxx.supabase.co",
+        pathname: "/storage/v1/object/public/**",
+      },
+      // Cloudinary — só se o Storage deixar de bastar
       // { protocol: "https", hostname: "res.cloudinary.com" },
     ],
   },
@@ -851,94 +896,24 @@ export default nextConfig
 | `'use client'` mínimo | Performance — menos JS no cliente |
 | Import direto (sem barrel) | `@/components/catalogo/card-produto` |
 | Props sempre tipadas | Nunca `any` |
+| `exigirAdmin()` na primeira instrução das páginas e actions protegidas | Cada rota valida a sessão. A action de login valida as credenciais antes de iniciá-la. |
+| `FormData` como `unknown` + Zod | Nunca confiar em dado vindo do cliente |
+| Sem `service_role` | O admin usa a sessão do dono + RLS |
+| Páginas públicas só com `supabasePublico` | Consulta sem cookies do painel |
+| Mutação → `revalidarCatalogo()` | O site reflete a mudança sem esperar o `revalidate` |
 
 ---
 
-## ⚡ Seções Opcionais — Ligar quando precisar
+## ⚡ Supabase (Fase 6) e Seções Opcionais
 
 ---
 
 ### 🗄️ Supabase — Banco de Dados
 
-**Quando ligar:** quando precisar persistir produtos em banco real.
+**Quando ligar:** Fase 6, antes do admin. O código dos clientes, de `lib/produtos.ts` e das Server Actions está na seção **Admin** acima; o SQL (tabelas, RLS, Storage e seed) está em `PLANEJAMENTO_V2.md`.
 
 ```bash
-pnpm add @supabase/supabase-js
-```
-
-#### `lib/supabase.ts` (server-side)
-
-```typescript
-import { createClient } from "@supabase/supabase-js"
-
-// Nunca importar em componentes 'use client'
-export const supabase = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.SUPABASE_SERVICE_ROLE_KEY!
-)
-```
-
-#### `lib/supabase-client.ts` (browser — somente leitura)
-
-```typescript
-"use client"
-import { createClient } from "@supabase/supabase-js"
-
-export const supabaseBrowser = createClient(
-  process.env.NEXT_PUBLIC_SUPABASE_URL!,
-  process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY!
-)
-```
-
-#### `lib/produtos.ts` com Supabase (substitui o mock inteiro)
-
-```typescript
-import { supabase } from "@/lib/supabase"
-import type { Produto, Categoria } from "@/types"
-
-export async function getProdutos(): Promise<Produto[]> {
-  const { data, error } = await supabase
-    .from("produtos")
-    .select("*, categoria:categorias(id, nome, slug, ordem)")
-    .eq("disponivel", true)
-    .order("ordem")
-  if (error) throw new Error(error.message)
-  return data ?? []
-}
-
-export async function getProdutoBySlug(slug: string): Promise<Produto | null> {
-  const { data } = await supabase
-    .from("produtos")
-    .select("*, categoria:categorias(id, nome, slug, ordem)")
-    .eq("slug", slug)
-    .eq("disponivel", true)
-    .single()
-  return data ?? null
-}
-
-export async function getCategorias(): Promise<Categoria[]> {
-  const { data } = await supabase
-    .from("categorias")
-    .select("*")
-    .order("ordem")
-  return data ?? []
-}
-
-export async function buscarProdutos(query: string, categoriaSlug?: string): Promise<Produto[]> {
-  let q = supabase
-    .from("produtos")
-    .select("*, categoria:categorias(id, nome, slug, ordem)")
-    .eq("disponivel", true)
-    .ilike("nome", `%${query}%`)
-
-  if (categoriaSlug) {
-    // Filtro por categoria via join — ajustar conforme estrutura real do banco
-    q = q.eq("categorias.slug", categoriaSlug)
-  }
-
-  const { data } = await q.order("ordem")
-  return data ?? []
-}
+pnpm add @supabase/supabase-js @supabase/ssr zod slugify server-only
 ```
 
 #### `.env.local` com Supabase
@@ -946,28 +921,17 @@ export async function buscarProdutos(query: string, categoriaSlug?: string): Pro
 ```env
 NEXT_PUBLIC_NUMERO_WHATSAPP=5583999999999
 NEXT_PUBLIC_SUPABASE_URL=https://xxxx.supabase.co
-NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...
-SUPABASE_SERVICE_ROLE_KEY=eyJ...  # somente server-side, nunca expor no cliente
+NEXT_PUBLIC_SUPABASE_ANON_KEY=eyJ...   # chave pública (anon / publishable, conforme o painel)
+# O admin usa a sessão do dono e as políticas de acesso do banco.
 ```
 
-#### ISR — adicionar após ligar o Supabase
+#### Cache do catálogo
 
-```typescript
-// app/page.tsx e app/produto/[slug]/page.tsx
-export const revalidate = 300  // revalida a cada 5 minutos
-```
+A home preserva `revalidate = 300` como configuração padrão, mas a rota é renderizada a cada requisição porque lê `searchParams`. No detalhe, `revalidate = 0` permite servir imediatamente o preço vigente. O cliente público usa os dados visíveis sem sessão do painel.
 
 #### Keepalive — Supabase Free pausa após 1 semana sem acesso
 
-```typescript
-// app/api/keepalive/route.ts
-import { supabase } from "@/lib/supabase"
-
-export async function GET() {
-  await supabase.from("produtos").select("id").limit(1)
-  return Response.json({ ok: true })
-}
-```
+`GET /api/keepalive` faz uma consulta curta ao catálogo. Retorna HTTP 200 com `{ ok: true }` quando o Supabase responde e HTTP 503 com `{ ok: false }` em caso de erro.
 
 Configure um cron externo em [cron-job.org](https://cron-job.org) para chamar `/api/keepalive` a cada 3 dias.
 

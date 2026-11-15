@@ -36,7 +36,25 @@ pnpm biome check --write     # lint + format + organizar imports
 - Componentes pequenos, uma responsabilidade cada.
 - Botões e áreas de toque com no mínimo 48px de altura.
 - Nunca commite segredos. Toda configuração vem de variáveis de ambiente validadas na inicialização.
-- Nunca expor `SUPABASE_SERVICE_ROLE_KEY` no cliente (quando o Supabase entrar).
+- Este projeto **não usa** chave de serviço do Supabase: o admin escreve com a sessão do usuário logado + RLS. Se algo parecer exigir essa chave, pare e pergunte.
+
+## Admin e Supabase (Fases 6 e 7)
+
+Detalhes de código em `ARQUITETURA_V2.md` (seção Admin) e SQL em `PLANEJAMENTO_V2.md` (seção Supabase).
+
+- **Você não tem acesso ao banco.** Escreva as migrations em `supabase/migrations/` (numeradas, `0001_...sql`) e avise ao final. O desenvolvedor executa no SQL Editor do Supabase e confirma antes de você seguir.
+- **Três clientes Supabase em `lib/supabase/`:** `publico.ts` (anon, sem cookies; leitura pública), `servidor.ts` (`@supabase/ssr` com cookies; só no admin) e `navegador.ts` (só o upload de imagem; o login é uma Server Action). Nunca use o cliente de servidor em páginas públicas: ler cookies torna a página dinâmica e quebra o `revalidate`.
+- **Route groups:** rotas públicas em `app/(loja)/`, admin em `app/(admin)/admin/`. As URLs não mudam. O `app/layout.tsx` raiz fica só com `html`, `body`, fonte e tema.
+- **Autorização em camadas:** `proxy.ts` só renova a sessão e redireciona (no Next 16 o `middleware` se chama `proxy`); ele não é a barreira de segurança. Toda página e Server Action protegida chama `exigirAdmin()` primeiro. A action `entrar()` valida as credenciais com Zod antes de iniciar a sessão. Use `getUser()`, nunca confie em `getSession()` para autorizar.
+- **Server Actions:** arquivo `actions.ts` com `'use server'`; `exigirAdmin()` primeiro; `FormData` tratado como `unknown`; validação com Zod; retorno `{ ok, erros, mensagem }` (não lançar exceção por erro de validação). Erros do Supabase viram mensagens em português; nunca repasse `error.message` cru ao usuário. Componentes de formulário recebem a action por props (a página importa a action), para manter a regra de camadas.
+- **Preço:** o campo aceita vírgula ("22,90"). Converta no servidor com o helper único `lib/admin/preco.ts`; nunca use `Number()` direto no texto digitado.
+- **Slug:** gerado no servidor com `slugify` a partir do nome. Em colisão, acrescente `-2`, `-3`. É **imutável** depois de criado (links já compartilhados no WhatsApp não podem quebrar), mesmo que o nome mude.
+- **Imagens:** o navegador redimensiona (lado maior 1200px, WebP) antes de enviar direto ao bucket `produtos` do Supabase Storage. A action só aceita `imagem_url` do bucket do próprio projeto e `imagem_path` no formato `<uuid>.webp`. Ao trocar ou excluir, remova o arquivo antigo do Storage.
+- **Promoções:** tabela própria. Validar no servidor: preço promocional menor que o preço normal, `fim` depois de `inicio` e sem sobreposição para o mesmo produto. Datas digitadas são horário de Brasília (`-03:00`); armazene em `timestamptz`.
+- **Cache:** sem `cacheComponents` e sem `'use cache'`. Home e busca leem os filtros da URL por requisição. O detalhe usa `revalidate = 0` para respeitar a vigência das promoções; toda mutação do admin chama `revalidarCatalogo()` (`lib/admin/revalidar.ts`).
+- **Rotas admin:** `noindex`, fora do sitemap, `Disallow` no `robots.txt`, sem nenhum link a partir do site público.
+- **UI do admin:** mobile first (o dono usará no celular), cards em vez de tabelas no mobile, alvos de toque de 48px, confirmação (`AlertDialog`) antes de excluir, estados de carregamento e de erro em todo formulário.
+- **Auth:** login por e-mail e senha, erro genérico ("E-mail ou senha incorretos"). Cadastro público desabilitado no Supabase; só existe o usuário do dono.
 
 ## Documentação das libs
 

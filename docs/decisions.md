@@ -83,3 +83,10 @@
 - A sobreposição usa períodos com início inclusivo e fim exclusivo, com fim nulo representando duração indefinida. As Server Actions serializam criações e edições do mesmo produto dentro de cada processo. O esquema atual permite que processos distintos gravem ao mesmo tempo.
 - O resumo continua contando promoções pelo período de vigência. A home e a busca refletem a vigência na leitura. Após a correção da expiração, o detalhe também é renderizado a cada acesso: o ISR de 300 segundos podia servir o preço promocional depois do fim. O cliente público continua sem cookies, e o layout, a página e seus metadados compartilham a consulta ao produto dentro da mesma requisição.
 - O skeleton da home fica no grupo `(inicio)`. No detalhe, o layout verifica se o produto existe antes de renderizar o skeleton da página, preservando o HTTP 404 de produtos ausentes.
+
+## Fase 7F
+
+- A opção e o par de campos de imagem passam pelo Zod na edição. Omitir o par preserva a foto atual. Enviar os dois valores vazios solicita a remoção.
+- Os formulários movem o foco ao primeiro campo inválido após a resposta. Quando uma ação redireciona após gravar, a página de destino resolve um código conhecido para uma confirmação em português. A exclusão de produto conserva o filtro por nome.
+- O Next.js 16 retirou o First Load JS da saída da build. A comparação com a Fase 6 usa a soma dos tamanhos em gzip dos arquivos JavaScript referenciados pelos scripts no HTML de cada rota. Os manifestos de referências dos componentes cliente permitem conferir quais módulos entram nas rotas públicas.
+- O fluxo automatizado usa a build de produção com Supabase simulado. A aprovação do fluxo no aparelho do dono e a conferência do cadastro e das políticas no projeto Supabase ficam no checklist de entrega.
