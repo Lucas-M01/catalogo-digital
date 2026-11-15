@@ -7,6 +7,8 @@ import {
   getProdutosPorCategoria,
 } from "@/lib/produtos";
 
+export const revalidate = 300;
+
 export default async function HomePage({ searchParams }: PageProps<"/">) {
   const [{ categoria }, categorias] = await Promise.all([
     searchParams,

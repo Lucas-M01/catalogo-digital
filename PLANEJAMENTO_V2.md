@@ -481,20 +481,22 @@ export default nextConfig
 
 > O admin só faz sentido sobre o banco real. Ao final desta fase o site público deve ficar idêntico ao de hoje, agora lendo do Supabase.
 
-- [ ] Criar o projeto no Supabase (região São Paulo)
+- [x] Criar o projeto no Supabase (região São Paulo)
 - [ ] Auth: **desabilitar** "Allow new users to sign up" e criar manualmente o usuário do dono (Authentication → Users → Add user, com e-mail confirmado)
 - [x] `pnpm add @supabase/supabase-js @supabase/ssr zod slugify server-only`
 - [x] `.env.example` com as variáveis públicas e `.env.local` ignorado pelo Git
-- [ ] `.env.local` com `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- [x] `.env.local` com `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`
 - [x] `lib/env.ts` — valida as variáveis do Supabase com Zod na inicialização do cliente
 - [x] Escrever `supabase/migrations/0001_schema.sql`, `0002_rls.sql`, `0003_storage.sql` e `0004_seed.sql` (SQL na seção Supabase abaixo; o seed vem do mock)
-- [ ] Executar as quatro migrations no SQL Editor do Supabase
+- [x] Executar as quatro migrations no SQL Editor do Supabase
 - [x] `lib/supabase/publico.ts` (anon, sem cookies)
-- [ ] Reescrever `lib/produtos.ts` com o Supabase, resolvendo a promoção ativa em `preco_promocional` (código em `ARQUITETURA_V2.md`)
+- [x] Reescrever `lib/produtos.ts` com o Supabase, resolvendo a promoção ativa em `preco_promocional` (código em `ARQUITETURA_V2.md`)
 - [x] `next.config.ts`: liberar o host do Storage em `remotePatterns`
-- [ ] `export const revalidate = 300` em `/` e `/produto/[slug]`
-- [ ] `app/api/keepalive/route.ts` + cron externo a cada 3 dias
-- [ ] Validar com `pnpm build && pnpm start`: catálogo igual ao do mock; produto `disponivel = false` não aparece; promoção com `fim` no passado não aparece; busca e filtro por categoria funcionando
+- [x] `export const revalidate = 300` em `/` e `/produto/[slug]`
+- [x] Criar `app/api/keepalive/route.ts`
+- [ ] Configurar cron externo para chamar `/api/keepalive` a cada 3 dias
+- [x] Validar com `pnpm build && pnpm start`: catálogo igual ao do mock; busca, filtros, detalhe, not-found e preços promocionais no card e na mensagem do WhatsApp
+- [x] Validar com respostas simuladas: produto indisponível fica de fora e promoções futuras ou vencidas são descartadas
 - [ ] Depois de validado, remover `lib/mock/` (confirmar com o desenvolvedor)
 
 ---

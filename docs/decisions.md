@@ -40,3 +40,11 @@
 - A Data API do Supabase exige permissões explícitas nas tabelas novas. A migration de RLS concede leitura para `anon` e leitura e escrita para `authenticated` nas três tabelas do catálogo.
 - Cada arquivo SQL usa uma transação para evitar aplicação parcial ao ser executado no SQL Editor.
 - O seed usa UUIDs fixos também para os produtos para referenciar diretamente cada produto na sua promoção. Os campos e a ordem de cada registro vêm do mock.
+
+## Fase 6B
+
+- As listas mantêm a ordem original do mock por categoria e depois pela ordem do produto. A consulta traz apenas produtos disponíveis e pode restringir a categoria no PostgREST.
+- A busca aplica a normalização existente de nome e descrição em memória. O `ilike` do exemplo da arquitetura diferencia acentos e trata caracteres como `%` como curingas. O filtro de promoções roda sobre os preços já mapeados em `paraProduto()`.
+- As consultas usam `.overrideTypes<T, { merge: false }>()`, a alternativa a `.returns<T>()` recomendada pela versão instalada do PostgREST. `.maybeSingle()` preserva o retorno nulo para um slug inexistente.
+- O keepalive retorna HTTP 503 quando a consulta falha, para o agendador detectar a indisponibilidade.
+- A home continua dinâmica porque usa o filtro de categoria em `searchParams`. Os detalhes pré-renderizados revalidam a cada 300 segundos. Com `dynamicParams = false`, novos slugs entram na rota de detalhe no próximo build e slugs desconhecidos retornam HTTP 404.
