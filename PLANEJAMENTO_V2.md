@@ -524,6 +524,14 @@ export default nextConfig
 - [x] `lib/admin/slug.ts` com `slugify` e tratamento de colisão
 - [x] `lib/admin/revalidar.ts` e chamada após cada mutação
 
+**7C — Produtos**
+
+- [x] Lista em cards (mobile): foto, nome, preço, categoria, interruptor de disponível, busca por nome
+- [x] Criar e editar: nome, descrição, preço (aceita vírgula), categoria, disponível, destaque, ordem
+- [x] Excluir com `AlertDialog`; apagar também a imagem do Storage
+- [x] `lib/admin/preco.ts` e schemas Zod
+- [x] Slug gerado na criação e nunca alterado
+
 ---
 
 ## Checklist de Entrega (quando o projeto estiver pronto)

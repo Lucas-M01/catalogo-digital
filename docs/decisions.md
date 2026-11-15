@@ -62,3 +62,10 @@
 - A edição usa uma ação para salvar o nome ou a ordem separadamente. Cada gravação altera apenas o campo enviado, e o slug é definido na criação.
 - Quando nomes produzem o mesmo slug, a criação usa o primeiro sufixo livre a partir de `-2`. Se duas gravações escolherem o mesmo slug, a restrição de unicidade dispara uma nova consulta antes da próxima tentativa. Nomes cujo slug fica vazio usam a base `item`.
 - A lista conta todos os produtos vinculados, inclusive os ocultos. A exclusão usa a chave estrangeira como verificação no momento da gravação e mantém o diálogo aberto com a mensagem quando o banco bloqueia a operação.
+
+## Fase 7C
+
+- O preço é validado em centavos. O campo aceita vírgula decimal e ponto decimal com uma ou duas casas. Um ponto seguido de três dígitos é tratado como separador de milhar quando o agrupamento é válido.
+- A busca administrativa filtra os resultados paginados por nome, ignorando acentos e diferenças entre maiúsculas e minúsculas.
+- A edição envia os campos ocultos de imagem, e a gravação deixa as colunas de imagem fora do payload. A exclusão usa o caminho retornado pela linha excluída. Se o Storage falhar, o catálogo é revalidado e a lista informa que a limpeza do arquivo ficou pendente.
+- A rota pública de detalhe aceita slugs sob demanda. Os detalhes mantêm ISR de 300 segundos e são revalidados após as mutações do painel. Isso permite abrir produtos novos e reativados sem um novo build.
