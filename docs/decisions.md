@@ -56,3 +56,9 @@
 - O proxy verifica a sessão com `getUser()` e reaplica os cookies e os cabeçalhos retornados por `setAll` ao redirecionar. As páginas protegidas e a ação de sair fazem sua própria verificação. A ação encerra a sessão atual.
 - O resumo conta registros no PostgREST, incluindo produtos indisponíveis e promoções com `inicio <= agora` e `fim > agora` ou sem fim. Se uma consulta falhar, o resumo indica que a contagem correspondente está indisponível.
 - Os clientes usam a variável pública configurada na Fase 6. A documentação atual do Supabase recomenda a chave publicável. A troca pode ser feita em uma etapa de configuração que atualize a variável para `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` e valide o catálogo e a sessão do dono. [Guia de chaves do Supabase](https://supabase.com/docs/guides/getting-started/api-keys)
+
+## Fase 7B
+
+- A edição usa uma ação para salvar o nome ou a ordem separadamente. Cada gravação altera apenas o campo enviado, e o slug é definido na criação.
+- Quando nomes produzem o mesmo slug, a criação usa o primeiro sufixo livre a partir de `-2`. Se duas gravações escolherem o mesmo slug, a restrição de unicidade dispara uma nova consulta antes da próxima tentativa. Nomes cujo slug fica vazio usam a base `item`.
+- A lista conta todos os produtos vinculados, inclusive os ocultos. A exclusão usa a chave estrangeira como verificação no momento da gravação e mantém o diálogo aberto com a mensagem quando o banco bloqueia a operação.

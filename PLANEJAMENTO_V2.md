@@ -517,6 +517,13 @@ export default nextConfig
 - [x] Testar login válido, erro genérico e saída com uma sessão simulada na build de produção
 - [ ] Validar login e saída com a conta real do dono no Supabase configurado
 
+**7B — Categorias** (vem antes de produtos, que dependem delas)
+
+- [x] Listar, criar, renomear e reordenar (`ordem`, `int2`)
+- [x] Excluir só se não houver produtos (a FK é `on delete restrict`); mensagem clara quando bloqueado
+- [x] `lib/admin/slug.ts` com `slugify` e tratamento de colisão
+- [x] `lib/admin/revalidar.ts` e chamada após cada mutação
+
 ---
 
 ## Checklist de Entrega (quando o projeto estiver pronto)
