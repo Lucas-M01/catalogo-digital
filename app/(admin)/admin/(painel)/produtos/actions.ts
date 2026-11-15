@@ -4,6 +4,7 @@ import { redirect } from "next/navigation";
 import { z } from "zod";
 import { exigirAdmin } from "@/lib/admin/auth";
 import {
+  buscarImagemProduto,
   inserirProduto,
   excluirProduto as removerProduto,
   alternarDisponivel as salvarDisponibilidade,
@@ -13,6 +14,7 @@ import { revalidarCatalogo } from "@/lib/admin/revalidar";
 import {
   schemaDisponibilidade,
   schemaEdicaoProduto,
+  schemaImagemProduto,
   schemaProduto,
   schemaProdutoId,
 } from "@/lib/admin/schemas";
@@ -23,11 +25,23 @@ export async function criarProduto(
   formData: FormData,
 ): Promise<EstadoForm> {
   const { supabase } = await exigirAdmin();
-  const dados = schemaProduto.safeParse(Object.fromEntries(formData));
-  if (!dados.success)
-    return { ok: false, erros: z.flattenError(dados.error).fieldErrors };
+  const entrada = Object.fromEntries(formData);
+  const dados = schemaProduto.safeParse(entrada);
+  const imagem = schemaImagemProduto().safeParse(entrada);
+  if (!dados.success || !imagem.success) {
+    return {
+      ok: false,
+      erros: {
+        ...(dados.success ? {} : z.flattenError(dados.error).fieldErrors),
+        ...(imagem.success ? {} : z.flattenError(imagem.error).fieldErrors),
+      },
+    };
+  }
 
-  const resultado = await inserirProduto(supabase, dados.data);
+  const resultado = await inserirProduto(supabase, {
+    ...dados.data,
+    ...imagem.data,
+  });
   if (!resultado.ok) return resultado;
 
   revalidarCatalogo();
@@ -39,7 +53,8 @@ export async function atualizarProduto(
   formData: FormData,
 ): Promise<EstadoForm> {
   const { supabase } = await exigirAdmin();
-  const dados = schemaEdicaoProduto.safeParse(Object.fromEntries(formData));
+  const entrada = Object.fromEntries(formData);
+  const dados = schemaEdicaoProduto.safeParse(entrada);
   if (!dados.success) {
     return {
       ok: false,
@@ -49,7 +64,30 @@ export async function atualizarProduto(
   }
 
   const { id, ...campos } = dados.data;
-  const resultado = await salvarProduto(supabase, id, campos);
+  const { data: atual, error } = await buscarImagemProduto(supabase, id);
+  if (error)
+    return {
+      ok: false,
+      mensagem: "Não foi possível carregar a imagem atual. Tente novamente.",
+    };
+  if (!atual) return { ok: false, mensagem: "Produto não encontrado." };
+
+  const imagem = schemaImagemProduto(atual).safeParse(entrada);
+  if (!imagem.success)
+    return { ok: false, erros: z.flattenError(imagem.error).fieldErrors };
+
+  const mudouImagem =
+    entrada.preservar_imagem !== "1" &&
+    (Object.hasOwn(entrada, "imagem_url") ||
+      Object.hasOwn(entrada, "imagem_path")) &&
+    (imagem.data.imagem_url !== atual.imagem_url ||
+      imagem.data.imagem_path !== atual.imagem_path);
+  const resultado = await salvarProduto(
+    supabase,
+    id,
+    campos,
+    mudouImagem ? { atual, nova: imagem.data } : undefined,
+  );
   if (!resultado.ok) return resultado;
 
   revalidarCatalogo();

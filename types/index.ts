@@ -39,6 +39,8 @@ export type ProdutoAdmin = Omit<Produto, "preco_promocional"> & {
   promocoes: Promocao[];
 };
 
+export type ImagemProduto = Pick<ProdutoAdmin, "imagem_url" | "imagem_path">;
+
 export type EstadoForm = {
   ok: boolean;
   mensagem?: string;

@@ -2,6 +2,8 @@ import "server-only";
 
 import { z } from "zod";
 import { converterPreco } from "@/lib/admin/preco";
+import { lerEnvSupabase } from "@/lib/env";
+import type { ImagemProduto } from "@/types";
 
 const caixaMarcacao = z
   .literal("on")
@@ -50,5 +52,42 @@ export const schemaDisponibilidade = schemaProdutoId.extend({
     .enum(["true", "false"], "Disponibilidade inválida.")
     .transform((valor) => valor === "true"),
 });
+
+export function schemaImagemProduto(atual?: ImagemProduto) {
+  const { NEXT_PUBLIC_SUPABASE_URL } = lerEnvSupabase();
+  const prefixo = `${NEXT_PUBLIC_SUPABASE_URL.replace(/\/+$/, "")}/storage/v1/object/public/produtos/`;
+
+  return z
+    .object({
+      imagem_url: z
+        .string("URL de imagem inválida.")
+        .optional()
+        .transform((valor) => valor || null),
+      imagem_path: z
+        .string("Caminho de imagem inválido.")
+        .optional()
+        .transform((valor) => valor || null)
+        .refine(
+          (valor) => valor === null || /^[0-9a-f-]{36}\.webp$/.test(valor),
+          "Caminho de imagem inválido.",
+        ),
+    })
+    .refine(
+      ({ imagem_url, imagem_path }) => {
+        if (imagem_url === null && imagem_path === null) return true;
+        if (
+          imagem_url !== null &&
+          imagem_url === atual?.imagem_url &&
+          imagem_path === atual.imagem_path
+        )
+          return true;
+        return imagem_path !== null && imagem_url === prefixo + imagem_path;
+      },
+      {
+        path: ["imagem_url"],
+        message: "Use uma imagem enviada para o Storage desta loja.",
+      },
+    );
+}
 
 export type DadosProduto = z.output<typeof schemaProduto>;

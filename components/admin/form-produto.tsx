@@ -8,10 +8,16 @@ import {
   useId,
   useState,
 } from "react";
+import { UploadImagem } from "@/components/admin/upload-imagem";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import type { Categoria, EstadoForm, ProdutoAdmin } from "@/types";
+import type {
+  Categoria,
+  EstadoForm,
+  ImagemProduto,
+  ProdutoAdmin,
+} from "@/types";
 
 type Props = {
   action: (estado: EstadoForm, dados: FormData) => Promise<EstadoForm>;
@@ -53,6 +59,14 @@ function Campo({
 export function FormProduto({ action, categorias, produto }: Props) {
   const id = useId();
   const [estado, formAction, pendente] = useActionState(action, { ok: false });
+  const [imagemEscolhida, setImagemEscolhida] = useState<ImagemProduto | null>(
+    null,
+  );
+  const [enviandoImagem, setEnviandoImagem] = useState(false);
+  const imagem = imagemEscolhida ?? {
+    imagem_url: produto?.imagem_url ?? null,
+    imagem_path: produto?.imagem_path ?? null,
+  };
   const [dados, setDados] = useState({
     nome: produto?.nome ?? "",
     descricao: produto?.descricao ?? "",
@@ -113,24 +127,19 @@ export function FormProduto({ action, categorias, produto }: Props) {
     <form
       action={formAction}
       noValidate
-      aria-busy={pendente}
+      aria-busy={pendente || enviandoImagem}
       className="grid gap-4 rounded-xl border border-border bg-card p-4"
     >
-      {produto && (
-        <>
-          <input type="hidden" name="id" value={produto.id} />
-          <input
-            type="hidden"
-            name="imagem_url"
-            value={produto.imagem_url ?? ""}
-          />
-          <input
-            type="hidden"
-            name="imagem_path"
-            value={produto.imagem_path ?? ""}
-          />
-        </>
+      {produto && <input type="hidden" name="id" value={produto.id} />}
+      {produto && imagemEscolhida === null && (
+        <input type="hidden" name="preservar_imagem" value="1" />
       )}
+      <input type="hidden" name="imagem_url" value={imagem.imagem_url ?? ""} />
+      <input
+        type="hidden"
+        name="imagem_path"
+        value={imagem.imagem_path ?? ""}
+      />
       <Campo
         htmlFor={campo("nome").id}
         rotulo="Nome"
@@ -229,10 +238,20 @@ export function FormProduto({ action, categorias, produto }: Props) {
           </div>
         ))}
       </div>
+      <UploadImagem
+        imagem={imagem}
+        onChange={setImagemEscolhida}
+        onEnviando={setEnviandoImagem}
+        enviando={enviandoImagem}
+        disabled={pendente}
+        erroFormulario={
+          estado.erros?.imagem_url?.[0] ?? estado.erros?.imagem_path?.[0]
+        }
+      />
       <Button
         type="submit"
         className="min-h-12 w-full px-4 sm:w-fit"
-        disabled={pendente}
+        disabled={pendente || enviandoImagem}
       >
         {pendente ? "Salvando…" : produto ? "Salvar produto" : "Criar produto"}
       </Button>
