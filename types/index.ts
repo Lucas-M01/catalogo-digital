@@ -46,3 +46,25 @@ export type EstadoForm = {
   mensagem?: string;
   erros?: Record<string, string[] | undefined>;
 };
+
+export type HorarioFuncionamento = {
+  dia_semana: number;
+  abre: string; // HH:mm
+  fecha: string; // HH:mm
+};
+
+export type ConfigLoja = {
+  usar_horarios: boolean;
+  fechada_manualmente: boolean;
+  reabre_em: string | null;
+  mensagem_fechada: string | null;
+};
+
+export type StatusLoja =
+  | { aberta: true; fechaAs: string; minutosParaFechar: number }
+  | {
+      aberta: false;
+      motivo: "manual" | "horario";
+      proximaAbertura: string | null;
+      mensagem: string | null;
+    };

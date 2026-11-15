@@ -90,3 +90,11 @@
 - Os formulários movem o foco ao primeiro campo inválido após a resposta. Quando uma ação redireciona após gravar, a página de destino resolve um código conhecido para uma confirmação em português. A exclusão de produto conserva o filtro por nome.
 - O Next.js 16 retirou o First Load JS da saída da build. A comparação com a Fase 6 usa a soma dos tamanhos em gzip dos arquivos JavaScript referenciados pelos scripts no HTML de cada rota. Os manifestos de referências dos componentes cliente permitem conferir quais módulos entram nas rotas públicas.
 - O fluxo automatizado usa a build de produção com Supabase simulado. A aprovação do fluxo no aparelho do dono e a conferência do cadastro e das políticas no projeto Supabase ficam no checklist de entrega.
+
+## Fase 8A
+
+- O cálculo recebe o instante como argumento e extrai o dia e a hora em `America/Fortaleza`. Cada dia admite até dois intervalos com início inclusivo e fim exclusivo. Intervalos sobrepostos ou contíguos prolongam o período aberto até a primeira lacuna. A busca da próxima abertura inclui o mesmo dia da semana seguinte quando necessário.
+- O fechamento manual termina no próprio instante de `reabre_em`. Enquanto durar, a data informada ao visitante indica o fim da pausa. Quando a loja abre sem fechamento programado, `fechaAs` é uma string vazia e `minutosParaFechar` é infinito.
+- A leitura converte os horários do Postgres de `HH:mm:ss` para `HH:mm` e valida o limite de dois intervalos por dia. O painel validará o limite também ao gravar, na Fase 8B. `getDadosLoja()` usa a configuração padrão de loja aberta se qualquer consulta falhar. Uma lista vazia lida com sucesso representa uma semana sem intervalos quando `usar_horarios` está ativo.
+- A migration 0005 mantém a transação usada nos arquivos anteriores e concede permissões explícitas à Data API além da RLS, como na 0002. [Documentação da Data API](https://supabase.com/docs/guides/api/securing-your-api)
+- O script de verificação importa a função com a extensão `.ts` para rodar com o suporte nativo do Node. O TypeScript aceita esse import com `allowImportingTsExtensions` e `noEmit`.

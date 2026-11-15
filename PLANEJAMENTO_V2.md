@@ -557,6 +557,26 @@ export default nextConfig
 - [x] Documentar o fluxo do dono e o roteiro de teste no celular em [docs/ADMIN.md](docs/ADMIN.md)
 - [ ] Conferir no Supabase que o cadastro público continua desabilitado e que as políticas de escrita são só `to authenticated`
 
+### Fase 8 — Horário de funcionamento
+
+**8A — Banco e lógica**
+
+- [x] Criar [`0005_horarios.sql`](supabase/migrations/0005_horarios.sql) com horários, configuração única, RLS e RPC para salvar a semana em uma operação atômica.
+- [x] Definir os tipos e calcular o status em `America/Fortaleza`, incluindo virada de dia, fechamento manual e próxima abertura.
+- [x] Ler os dados pelo cliente público sem cookies. Em caso de falha em qualquer leitura, registrar o erro no servidor e assumir loja aberta.
+- [x] Verificar os cenários com instantes UTC fixos em `scripts/verificar-status-loja.ts`.
+- [ ] Executar apenas a migration 0005 no SQL Editor do Supabase e confirmar a aplicação antes da Fase 8B.
+
+**8B — Admin**
+
+- [ ] Criar o formulário de horários e configurações de fechamento no painel.
+- [ ] Validar no servidor até dois intervalos por dia, aceitar a virada de meia-noite e gravar a semana pela RPC.
+
+**8C — Site público**
+
+- [ ] Integrar a leitura e exibir o status e a próxima abertura no catálogo.
+- [ ] Validar a atualização do status durante a visita, considerando a hora de Fortaleza.
+
 ---
 
 ## Checklist de Entrega (quando o projeto estiver pronto)
