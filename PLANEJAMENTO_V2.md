@@ -497,7 +497,7 @@ export default nextConfig
 - [ ] Configurar cron externo para chamar `/api/keepalive` a cada 3 dias
 - [x] Validar com `pnpm build && pnpm start`: catálogo igual ao do mock; busca, filtros, detalhe, not-found e preços promocionais no card e na mensagem do WhatsApp
 - [x] Validar com respostas simuladas: produto indisponível fica de fora e promoções futuras ou vencidas são descartadas
-- [ ] Depois de validado, remover `lib/mock/` (confirmar com o desenvolvedor)
+- [x] Depois de validado, remover `lib/mock/` (confirmar com o desenvolvedor)
 
 ---
 
