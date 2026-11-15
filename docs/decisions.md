@@ -48,3 +48,11 @@
 - As consultas usam `.overrideTypes<T, { merge: false }>()`, a alternativa a `.returns<T>()` recomendada pela versão instalada do PostgREST. `.maybeSingle()` preserva o retorno nulo para um slug inexistente.
 - O keepalive retorna HTTP 503 quando a consulta falha, para o agendador detectar a indisponibilidade.
 - A home continua dinâmica porque usa o filtro de categoria em `searchParams`. Os detalhes pré-renderizados revalidam a cada 300 segundos. Com `dynamicParams = false`, novos slugs entram na rota de detalhe no próximo build e slugs desconhecidos retornam HTTP 404.
+
+## Fase 7A
+
+- A branch `feat/fase-7a` partiu da `main` e avançou até a Fase 6 validada, que ainda estava na branch `feat/fase-6`.
+- O layout da loja compartilha a estrutura visual com a página 404 da raiz. O grupo da loja tem seu próprio limite de erro para manter o cabeçalho e o rodapé em caso de falha de uma rota pública.
+- O proxy verifica a sessão com `getUser()` e reaplica os cookies e os cabeçalhos retornados por `setAll` ao redirecionar. As páginas protegidas e a ação de sair fazem sua própria verificação. A ação encerra a sessão atual.
+- O resumo conta registros no PostgREST, incluindo produtos indisponíveis e promoções com `inicio <= agora` e `fim > agora` ou sem fim. Se uma consulta falhar, o resumo indica que a contagem correspondente está indisponível.
+- Os clientes usam a variável pública configurada na Fase 6. A documentação atual do Supabase recomenda a chave publicável. A troca pode ser feita em uma etapa de configuração que atualize a variável para `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` e valide o catálogo e a sessão do dono. [Guia de chaves do Supabase](https://supabase.com/docs/guides/getting-started/api-keys)

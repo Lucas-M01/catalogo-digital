@@ -499,6 +499,24 @@ export default nextConfig
 - [x] Validar com respostas simuladas: produto indisponível fica de fora e promoções futuras ou vencidas são descartadas
 - [x] Depois de validado, remover `lib/mock/` (confirmar com o desenvolvedor)
 
+### Fase 7 — Painel Admin
+
+> Cada subfase termina com `pnpm biome check --write` e `pnpm build`, e é testada no celular.
+
+**7A — Base e autenticação**
+
+- [x] Route groups: mover rotas públicas para `app/(loja)/`; `Header`, `Footer` e `CarrinhoProvider` vão para `app/(loja)/layout.tsx`; `app/layout.tsx` fica só com html, body, fonte e tema
+- [x] `lib/supabase/servidor.ts`, `lib/supabase/navegador.ts` e `lib/supabase/sessao.ts`
+- [x] `proxy.ts` com matcher só em `/admin/:path*`
+- [x] `lib/admin/auth.ts` — `exigirAdmin()` com `getUser()`
+- [x] `/admin/login` (e-mail e senha, mensagem de erro genérica) e ação de sair
+- [x] Layout do painel: barra inferior no mobile, lateral no desktop; `noindex`; `app/robots.ts` com `Disallow: /admin`
+- [x] `/admin` — resumo (contagem de produtos, ocultos e promoções ativas) com atalhos
+- [x] shadcn: `label`, `textarea`, `select`, `switch`, `alert-dialog`
+- [x] Testar: `/admin` sem login redireciona; `sair()` sem sessão é rejeitada; rotas públicas seguem sem cookies, com ISR no detalhe e renderização dinâmica na home e na busca por causa de `searchParams`
+- [x] Testar login válido, erro genérico e saída com uma sessão simulada na build de produção
+- [ ] Validar login e saída com a conta real do dono no Supabase configurado
+
 ---
 
 ## Checklist de Entrega (quando o projeto estiver pronto)
