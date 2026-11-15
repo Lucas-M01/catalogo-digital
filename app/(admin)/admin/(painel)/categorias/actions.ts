@@ -1,5 +1,6 @@
 "use server";
 
+import { redirect } from "next/navigation";
 import { z } from "zod";
 import { exigirAdmin } from "@/lib/admin/auth";
 import {
@@ -11,12 +12,12 @@ import { revalidarCatalogo } from "@/lib/admin/revalidar";
 import type { EstadoForm } from "@/types";
 
 const nome = z
-  .string()
+  .string("Informe o nome.")
   .trim()
   .min(1, "Informe o nome.")
   .max(60, "Use até 60 caracteres.");
 const ordem = z
-  .string()
+  .string("Informe a ordem.")
   .trim()
   .regex(/^\d{1,3}$/, "Informe um número inteiro de 0 a 999.")
   .transform(Number);
@@ -80,5 +81,5 @@ export async function excluirCategoria(
   if (!resultado.ok) return resultado;
 
   revalidarCatalogo();
-  return { ok: true, mensagem: "Categoria excluída." };
+  redirect("/admin/categorias?resultado=excluida");
 }

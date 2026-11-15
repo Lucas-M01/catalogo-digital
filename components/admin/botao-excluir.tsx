@@ -16,6 +16,7 @@ import type { EstadoForm } from "@/types";
 
 type Props = {
   id: string;
+  busca?: string;
   titulo: string;
   descricao: string;
   action: (estado: EstadoForm, dados: FormData) => Promise<EstadoForm>;
@@ -40,6 +41,7 @@ export function BotaoExcluir(props: Props) {
 
 function ConfirmarExclusao({
   id,
+  busca,
   titulo,
   descricao,
   action,
@@ -66,6 +68,7 @@ function ConfirmarExclusao({
       </AlertDialogHeader>
       <form action={formAction} aria-busy={pendente} className="grid gap-4">
         <input type="hidden" name="id" value={id} />
+        {busca && <input type="hidden" name="q" value={busca} />}
         {estado.mensagem && (
           <p role="alert" className="text-sm text-destructive">
             {estado.mensagem}

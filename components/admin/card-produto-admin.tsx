@@ -16,10 +16,12 @@ type ActionProduto = (
 
 export function CardProdutoAdmin({
   produto,
+  busca,
   alternarDisponivel,
   excluir,
 }: {
   produto: ProdutoAdmin;
+  busca: string;
   alternarDisponivel: ActionProduto;
   excluir: ActionProduto;
 }) {
@@ -73,6 +75,7 @@ export function CardProdutoAdmin({
         </Button>
         <BotaoExcluir
           id={produto.id}
+          busca={busca}
           titulo={`Excluir “${produto.nome}”?`}
           descricao="O produto será removido do catálogo. Esta ação é permanente."
           action={excluir}

@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { type ChangeEvent, useRef, useState } from "react";
+import { type ChangeEvent, useId, useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { enviarImagem } from "@/lib/admin/imagem";
 import type { ImagemProduto } from "@/types";
@@ -25,6 +25,7 @@ export function UploadImagem({
 }: Props) {
   const arquivo = useRef<HTMLInputElement>(null);
   const camera = useRef<HTMLInputElement>(null);
+  const idErro = useId();
   const [erro, setErro] = useState<string | null>(null);
   const mensagem = erro ?? erroFormulario;
   const bloqueado = disabled || enviando;
@@ -86,6 +87,8 @@ export function UploadImagem({
           variant="outline"
           className="min-h-12 px-4"
           disabled={bloqueado}
+          aria-invalid={Boolean(erroFormulario) || undefined}
+          aria-describedby={mensagem ? idErro : undefined}
           onClick={() => arquivo.current?.click()}
         >
           Escolher imagem
@@ -120,7 +123,7 @@ export function UploadImagem({
         </output>
       )}
       {mensagem && (
-        <p role="alert" className="text-sm text-destructive">
+        <p id={idErro} role="alert" className="text-sm text-destructive">
           {mensagem}
         </p>
       )}

@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { BotaoExcluir } from "@/components/admin/botao-excluir";
+import { FeedbackAdmin } from "@/components/admin/feedback-admin";
 import { FormCategoria } from "@/components/admin/form-categoria";
 import { exigirAdmin } from "@/lib/admin/auth";
 import { listarCategorias } from "@/lib/admin/categorias";
@@ -11,13 +12,21 @@ import {
 
 export const metadata: Metadata = { title: "Categorias" };
 
-export default async function PaginaCategorias() {
+export default async function PaginaCategorias({
+  searchParams,
+}: PageProps<"/admin/categorias">) {
   const { supabase } = await exigirAdmin();
-  const categorias = await listarCategorias(supabase);
+  const [categorias, { resultado }] = await Promise.all([
+    listarCategorias(supabase),
+    searchParams,
+  ]);
 
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold tracking-tight">Categorias</h1>
+      <FeedbackAdmin
+        mensagem={resultado === "excluida" ? "Categoria excluída." : undefined}
+      />
       <section
         aria-labelledby="nova-categoria"
         className="space-y-4 rounded-xl border border-border bg-card p-4 md:max-w-md"

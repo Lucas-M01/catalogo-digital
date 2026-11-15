@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CardPromocao } from "@/components/admin/card-promocao";
+import { FeedbackAdmin } from "@/components/admin/feedback-admin";
 import { Button } from "@/components/ui/button";
 import { exigirAdmin } from "@/lib/admin/auth";
 import { listarPromocoes } from "@/lib/admin/promocoes";
@@ -22,9 +23,24 @@ const secoes = [
   },
 ] as const;
 
-export default async function PaginaPromocoes() {
+const mensagens = {
+  criada: "Promoção criada.",
+  atualizada: "Promoção atualizada.",
+  encerrada: "Promoção encerrada.",
+  excluida: "Promoção excluída.",
+} as const;
+
+export default async function PaginaPromocoes({
+  searchParams,
+}: PageProps<"/admin/promocoes">) {
   const { supabase } = await exigirAdmin();
-  const grupos = await listarPromocoes(supabase);
+  const [grupos, { resultado }] = await Promise.all([
+    listarPromocoes(supabase),
+    searchParams,
+  ]);
+  const mensagem = Object.entries(mensagens).find(
+    ([chave]) => chave === resultado,
+  )?.[1];
 
   return (
     <div className="space-y-6">
@@ -34,6 +50,7 @@ export default async function PaginaPromocoes() {
           <Link href="/admin/promocoes/nova">Nova promoção</Link>
         </Button>
       </div>
+      <FeedbackAdmin mensagem={mensagem} />
       {grupos ? (
         <>
           <p className="text-sm text-muted-foreground">

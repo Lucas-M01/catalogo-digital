@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState } from "react";
+import { useFocoErro } from "@/components/admin/use-foco-erro";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import type { EstadoForm } from "@/types";
@@ -14,11 +15,13 @@ const estiloCampo =
 
 export function FormLogin({ action }: Props) {
   const [estado, formAction, pendente] = useActionState(action, { ok: false });
+  const formulario = useFocoErro(estado, pendente);
   const erro = estado.mensagem ? "erro-login" : undefined;
 
   return (
     <form
       action={formAction}
+      ref={formulario}
       className="flex flex-col gap-4"
       aria-busy={pendente}
       noValidate
@@ -32,6 +35,7 @@ export function FormLogin({ action }: Props) {
           autoComplete="username"
           autoCapitalize="none"
           required
+          aria-invalid={Boolean(estado.erros?.email?.length) || undefined}
           aria-describedby={erro}
           className={estiloCampo}
         />
@@ -44,12 +48,18 @@ export function FormLogin({ action }: Props) {
           type="password"
           autoComplete="current-password"
           required
+          aria-invalid={Boolean(estado.erros?.senha?.length) || undefined}
           aria-describedby={erro}
           className={estiloCampo}
         />
       </div>
       {estado.mensagem && (
-        <p id="erro-login" role="alert" className="text-sm text-destructive">
+        <p
+          id="erro-login"
+          role="alert"
+          tabIndex={-1}
+          className="text-sm text-destructive"
+        >
           {estado.mensagem}
         </p>
       )}

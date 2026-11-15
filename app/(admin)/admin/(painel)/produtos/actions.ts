@@ -20,6 +20,10 @@ import {
 } from "@/lib/admin/schemas";
 import type { EstadoForm } from "@/types";
 
+const schemaExclusaoProduto = schemaProdutoId.extend({
+  q: z.string().optional(),
+});
+
 export async function criarProduto(
   _estado: EstadoForm,
   formData: FormData,
@@ -45,7 +49,7 @@ export async function criarProduto(
   if (!resultado.ok) return resultado;
 
   revalidarCatalogo();
-  redirect("/admin/produtos");
+  redirect("/admin/produtos?resultado=criado");
 }
 
 export async function atualizarProduto(
@@ -63,7 +67,7 @@ export async function atualizarProduto(
     };
   }
 
-  const { id, ...campos } = dados.data;
+  const { id, preservar_imagem, ...campos } = dados.data;
   const { data: atual, error } = await buscarImagemProduto(supabase, id);
   if (error)
     return {
@@ -77,9 +81,7 @@ export async function atualizarProduto(
     return { ok: false, erros: z.flattenError(imagem.error).fieldErrors };
 
   const mudouImagem =
-    entrada.preservar_imagem !== "1" &&
-    (Object.hasOwn(entrada, "imagem_url") ||
-      Object.hasOwn(entrada, "imagem_path")) &&
+    preservar_imagem !== "1" &&
     (imagem.data.imagem_url !== atual.imagem_url ||
       imagem.data.imagem_path !== atual.imagem_path);
   const resultado = await salvarProduto(
@@ -111,7 +113,12 @@ export async function alternarDisponivel(
   if (!resultado.ok) return resultado;
 
   revalidarCatalogo();
-  return { ok: true };
+  return {
+    ok: true,
+    mensagem: dados.data.disponivel
+      ? "Produto visível na loja."
+      : "Produto ocultado.",
+  };
 }
 
 export async function excluirProduto(
@@ -119,13 +126,18 @@ export async function excluirProduto(
   formData: FormData,
 ): Promise<EstadoForm> {
   const { supabase } = await exigirAdmin();
-  const dados = schemaProdutoId.safeParse(Object.fromEntries(formData));
+  const dados = schemaExclusaoProduto.safeParse(Object.fromEntries(formData));
   if (!dados.success) return { ok: false, mensagem: "Produto inválido." };
 
   const resultado = await removerProduto(supabase, dados.data.id);
   if (!resultado.ok) return resultado;
 
   revalidarCatalogo();
-  if (resultado.imagemPendente) redirect("/admin/produtos?imagemPendente=1");
-  return { ok: true, mensagem: "Produto excluído." };
+  const parametros = new URLSearchParams(
+    resultado.imagemPendente
+      ? { imagemPendente: "1" }
+      : { resultado: "excluido" },
+  );
+  if (dados.data.q) parametros.set("q", dados.data.q);
+  redirect(`/admin/produtos?${parametros}`);
 }

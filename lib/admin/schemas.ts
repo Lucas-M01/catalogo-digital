@@ -45,7 +45,10 @@ export const schemaProduto = z.object({
     .transform(Number),
 });
 
-export const schemaEdicaoProduto = schemaProduto.extend({ id });
+export const schemaEdicaoProduto = schemaProduto.extend({
+  id,
+  preservar_imagem: z.literal("1", "Opção de imagem inválida.").optional(),
+});
 export const schemaProdutoId = z.object({ id });
 export const schemaDisponibilidade = schemaProdutoId.extend({
   disponivel: z
@@ -59,19 +62,20 @@ export function schemaImagemProduto(atual?: ImagemProduto) {
 
   return z
     .object({
-      imagem_url: z
-        .string("URL de imagem inválida.")
-        .optional()
-        .transform((valor) => valor || null),
+      imagem_url: z.string("URL de imagem inválida.").optional(),
       imagem_path: z
         .string("Caminho de imagem inválido.")
-        .optional()
-        .transform((valor) => valor || null)
         .refine(
-          (valor) => valor === null || /^[0-9a-f-]{36}\.webp$/.test(valor),
+          (valor) => valor === "" || /^[0-9a-f-]{36}\.webp$/.test(valor),
           "Caminho de imagem inválido.",
-        ),
+        )
+        .optional(),
     })
+    .transform(({ imagem_url, imagem_path }) =>
+      atual && imagem_url === undefined && imagem_path === undefined
+        ? atual
+        : { imagem_url: imagem_url || null, imagem_path: imagem_path || null },
+    )
     .refine(
       ({ imagem_url, imagem_path }) => {
         if (imagem_url === null && imagem_path === null) return true;

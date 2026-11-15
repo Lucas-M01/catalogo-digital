@@ -40,11 +40,16 @@ export function InterruptorDisponibilidade({
           onCheckedChange={alternar}
         />
       </div>
-      {estado.mensagem && (
-        <p role="alert" className="text-sm text-destructive">
-          {estado.mensagem}
-        </p>
-      )}
+      {estado.mensagem &&
+        (estado.ok ? (
+          <output className="text-sm text-muted-foreground">
+            {estado.mensagem}
+          </output>
+        ) : (
+          <p role="alert" className="text-sm text-destructive">
+            {estado.mensagem}
+          </p>
+        ))}
     </div>
   );
 }

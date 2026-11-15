@@ -114,7 +114,8 @@ async function validarPromocao(
       mensagem:
         "Não foi possível verificar o período da promoção. Tente novamente.",
     };
-  if (sobreposicao) return { ok: false, mensagem: mensagemSobreposicao };
+  if (sobreposicao)
+    return { ok: false, erros: { inicio: [mensagemSobreposicao] } };
   return null;
 }
 
@@ -142,7 +143,7 @@ export async function criarPromocao(
   if (erro) return erro;
 
   revalidarCatalogo();
-  redirect("/admin/promocoes");
+  redirect("/admin/promocoes?resultado=criada");
 }
 
 export async function atualizarPromocao(
@@ -175,7 +176,7 @@ export async function atualizarPromocao(
   if (erro) return erro;
 
   revalidarCatalogo();
-  redirect("/admin/promocoes");
+  redirect("/admin/promocoes?resultado=atualizada");
 }
 
 export async function encerrarPromocao(
@@ -200,7 +201,7 @@ export async function encerrarPromocao(
     };
 
   revalidarCatalogo();
-  return { ok: true, mensagem: "Promoção encerrada." };
+  redirect("/admin/promocoes?resultado=encerrada");
 }
 
 export async function excluirPromocao(
@@ -220,5 +221,5 @@ export async function excluirPromocao(
   if (!data) return { ok: false, mensagem: "Promoção não encontrada." };
 
   revalidarCatalogo();
-  return { ok: true, mensagem: "Promoção excluída." };
+  redirect("/admin/promocoes?resultado=excluida");
 }

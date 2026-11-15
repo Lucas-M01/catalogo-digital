@@ -5,14 +5,15 @@ import { z } from "zod";
 import { criarClienteServidor } from "@/lib/supabase/servidor";
 import type { EstadoForm } from "@/types";
 
+const mensagem = "E-mail ou senha incorretos";
 const schema = z.object({
-  email: z.string().trim().pipe(z.email()),
-  senha: z.string().min(1),
+  email: z.string(mensagem).trim().pipe(z.email(mensagem)),
+  senha: z.string(mensagem).min(1, mensagem),
 });
 
 const credenciaisInvalidas: EstadoForm = {
   ok: false,
-  mensagem: "E-mail ou senha incorretos",
+  mensagem,
 };
 
 export async function entrar(
@@ -24,7 +25,11 @@ export async function entrar(
     senha: formData.get("senha"),
   });
 
-  if (!dados.success) return credenciaisInvalidas;
+  if (!dados.success)
+    return {
+      ...credenciaisInvalidas,
+      erros: z.flattenError(dados.error).fieldErrors,
+    };
 
   const supabase = await criarClienteServidor();
   const { error } = await supabase.auth.signInWithPassword({
@@ -32,7 +37,11 @@ export async function entrar(
     password: dados.data.senha,
   });
 
-  if (error) return credenciaisInvalidas;
+  if (error)
+    return {
+      ...credenciaisInvalidas,
+      erros: { email: [mensagem], senha: [mensagem] },
+    };
 
-  redirect("/admin");
+  redirect("/admin?resultado=sessao-iniciada");
 }

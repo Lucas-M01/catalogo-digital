@@ -1,6 +1,7 @@
 "use client";
 
 import { useActionState, useId, useState } from "react";
+import { useFocoErro } from "@/components/admin/use-foco-erro";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import type { Categoria, EstadoForm } from "@/types";
@@ -32,6 +33,7 @@ export function FormCategoria({ action, categoria, campo }: Props) {
   );
 
   const erroNome = estado.erros?.nome?.[0];
+  const formulario = useFocoErro(estado, pendente);
   const erroOrdem = estado.erros?.ordem?.[0];
   const rotuloBotao =
     campo === "nome"
@@ -43,6 +45,7 @@ export function FormCategoria({ action, categoria, campo }: Props) {
   return (
     <form
       action={formAction}
+      ref={formulario}
       aria-busy={pendente}
       className="grid gap-3"
       noValidate
@@ -119,7 +122,7 @@ export function FormCategoria({ action, categoria, campo }: Props) {
             {estado.mensagem}
           </output>
         ) : (
-          <p role="alert" className="text-sm text-destructive">
+          <p role="alert" tabIndex={-1} className="text-sm text-destructive">
             {estado.mensagem}
           </p>
         ))}

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { type ChangeEvent, useActionState, useId, useState } from "react";
+import { useFocoErro } from "@/components/admin/use-foco-erro";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { formatarPreco } from "@/lib/whatsapp";
@@ -30,6 +31,7 @@ export function FormPromocao({
 }) {
   const id = useId();
   const [estado, formAction, pendente] = useActionState(action, { ok: false });
+  const formulario = useFocoErro(estado, pendente);
   const [dados, setDados] = useState(valores);
 
   function campo(nome: keyof Campos) {
@@ -86,6 +88,7 @@ export function FormPromocao({
   return (
     <form
       action={formAction}
+      ref={formulario}
       noValidate
       aria-busy={pendente}
       className="grid gap-4 rounded-xl border border-border bg-card p-4"
@@ -148,7 +151,7 @@ export function FormPromocao({
         </p>
       </fieldset>
       {estado.mensagem && (
-        <p role="alert" className="text-sm text-destructive">
+        <p role="alert" tabIndex={-1} className="text-sm text-destructive">
           {estado.mensagem}
         </p>
       )}

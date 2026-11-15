@@ -1,16 +1,21 @@
 import { ChevronRight } from "lucide-react";
 import Link from "next/link";
+import { FeedbackAdmin } from "@/components/admin/feedback-admin";
 import { secoesAdmin } from "@/components/admin/navegacao-admin";
 import { exigirAdmin } from "@/lib/admin/auth";
 import { contarProdutos } from "@/lib/admin/produtos";
 import { contarPromocoesAtivas } from "@/lib/admin/promocoes";
 
-export default async function PaginaResumo() {
+export default async function PaginaResumo({
+  searchParams,
+}: PageProps<"/admin">) {
   const { supabase } = await exigirAdmin();
-  const [{ total, ocultos }, promocoesAtivas] = await Promise.all([
-    contarProdutos(supabase),
-    contarPromocoesAtivas(supabase),
-  ]);
+  const [{ total, ocultos }, promocoesAtivas, { resultado }] =
+    await Promise.all([
+      contarProdutos(supabase),
+      contarPromocoesAtivas(supabase),
+      searchParams,
+    ]);
 
   const contagens = [
     { nome: "Produtos", valor: total },
@@ -21,6 +26,11 @@ export default async function PaginaResumo() {
   return (
     <div className="space-y-6">
       <h1 className="text-2xl font-semibold tracking-tight">Resumo</h1>
+      <FeedbackAdmin
+        mensagem={
+          resultado === "sessao-iniciada" ? "Você entrou no painel." : undefined
+        }
+      />
       <dl className="grid gap-3 md:grid-cols-3">
         {contagens.map(({ nome, valor }) => (
           <div

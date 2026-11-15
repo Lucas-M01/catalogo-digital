@@ -12,5 +12,5 @@ export async function sair(): Promise<EstadoForm> {
     return { ok: false, mensagem: "Não foi possível sair. Tente novamente." };
   }
 
-  redirect("/admin/login");
+  redirect("/admin/login?resultado=sessao-encerrada");
 }

@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import { UploadImagem } from "@/components/admin/upload-imagem";
+import { useFocoErro } from "@/components/admin/use-foco-erro";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -59,6 +60,7 @@ function Campo({
 export function FormProduto({ action, categorias, produto }: Props) {
   const id = useId();
   const [estado, formAction, pendente] = useActionState(action, { ok: false });
+  const formulario = useFocoErro(estado, pendente);
   const [imagemEscolhida, setImagemEscolhida] = useState<ImagemProduto | null>(
     null,
   );
@@ -126,6 +128,7 @@ export function FormProduto({ action, categorias, produto }: Props) {
   return (
     <form
       action={formAction}
+      ref={formulario}
       noValidate
       aria-busy={pendente || enviandoImagem}
       className="grid gap-4 rounded-xl border border-border bg-card p-4"
@@ -261,7 +264,7 @@ export function FormProduto({ action, categorias, produto }: Props) {
             {estado.mensagem}
           </output>
         ) : (
-          <p role="alert" className="text-sm text-destructive">
+          <p role="alert" tabIndex={-1} className="text-sm text-destructive">
             {estado.mensagem}
           </p>
         ))}

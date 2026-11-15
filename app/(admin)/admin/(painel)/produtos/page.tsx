@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { CardProdutoAdmin } from "@/components/admin/card-produto-admin";
+import { FeedbackAdmin } from "@/components/admin/feedback-admin";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { exigirAdmin } from "@/lib/admin/auth";
@@ -17,6 +18,12 @@ export default async function PaginaProdutos({
   const busca =
     (Array.isArray(params.q) ? params.q[0] : params.q)?.trim() ?? "";
   const produtos = await listarProdutos(supabase, busca);
+  const mensagem =
+    params.resultado === "criado"
+      ? "Produto criado."
+      : params.resultado === "excluido"
+        ? "Produto excluído."
+        : undefined;
 
   return (
     <div className="min-w-0 space-y-5">
@@ -26,8 +33,12 @@ export default async function PaginaProdutos({
           <Link href="/admin/produtos/novo">Novo produto</Link>
         </Button>
       </div>
+      <FeedbackAdmin mensagem={mensagem} />
       {params.imagemPendente === "1" && (
-        <p className="rounded-lg border border-border bg-card p-3 text-sm text-destructive">
+        <p
+          role="alert"
+          className="rounded-lg border border-border bg-card p-3 text-sm text-destructive"
+        >
           Produto excluído. Não foi possível remover sua imagem do Storage.
         </p>
       )}
@@ -68,6 +79,7 @@ export default async function PaginaProdutos({
             <li key={produto.id} className="min-w-0">
               <CardProdutoAdmin
                 produto={produto}
+                busca={busca}
                 alternarDisponivel={alternarDisponivel}
                 excluir={excluirProduto}
               />
