@@ -1,3 +1,19 @@
+import { z } from "zod";
+
+const schema = z.object({
+  NEXT_PUBLIC_SUPABASE_URL: z.url(),
+  NEXT_PUBLIC_SUPABASE_ANON_KEY: z.string().min(20),
+});
+
+export function lerEnvSupabase() {
+  // As variáveis NEXT_PUBLIC_* precisam ser lidas de forma literal
+  // para o Next inserir o valor no bundle do navegador.
+  return schema.parse({
+    NEXT_PUBLIC_SUPABASE_URL: process.env.NEXT_PUBLIC_SUPABASE_URL,
+    NEXT_PUBLIC_SUPABASE_ANON_KEY: process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY,
+  });
+}
+
 const numero = process.env.NEXT_PUBLIC_NUMERO_WHATSAPP?.trim();
 
 if (!numero || !/^[1-9][0-9]{7,14}$/.test(numero)) {

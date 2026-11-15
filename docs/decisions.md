@@ -32,3 +32,11 @@
 - O catálogo abre no tema escuro na primeira visita. O seletor do cabeçalho salva a escolha por navegador e a restaura antes da renderização visual da página.
 - O cabeçalho acompanha a rolagem. Cards e detalhes mostram a quantidade do carrinho após adicionar o produto, com controles para ajustar ou remover a unidade restante.
 - Os botões da home filtram o grid por `?categoria=slug`. A opção “Todas” limpa o filtro e a URL permite compartilhar a seleção.
+
+## Fase 6A
+
+- `lib/env.ts` já valida o WhatsApp e a origem da loja. O schema Zod do Supabase é avaliado ao inicializar o cliente público, para que o catálogo com mock funcione antes de configurar as duas variáveis do Supabase.
+- `next.config.ts` só libera imagens do Supabase quando a URL do projeto está definida. Os exemplos do planejamento e da arquitetura devem usar `reactCompiler: true` no nível raiz, como exige o Next.js 16.4.5 instalado.
+- A Data API do Supabase exige permissões explícitas nas tabelas novas. A migration de RLS concede leitura para `anon` e leitura e escrita para `authenticated` nas três tabelas do catálogo.
+- Cada arquivo SQL usa uma transação para evitar aplicação parcial ao ser executado no SQL Editor.
+- O seed usa UUIDs fixos também para os produtos para referenciar diretamente cada produto na sua promoção. Os campos e a ordem de cada registro vêm do mock.

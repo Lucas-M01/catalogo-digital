@@ -477,6 +477,26 @@ export default nextConfig
 - [x] Permitir ajustar quantidades nos cards e no detalhe, com acesso ao carrinho durante a rolagem
 - [ ] Testar performance no PageSpeed Mobile (meta: acima de 85)
 
+### Fase 6 — Supabase (pré-requisito do admin)
+
+> O admin só faz sentido sobre o banco real. Ao final desta fase o site público deve ficar idêntico ao de hoje, agora lendo do Supabase.
+
+- [ ] Criar o projeto no Supabase (região São Paulo)
+- [ ] Auth: **desabilitar** "Allow new users to sign up" e criar manualmente o usuário do dono (Authentication → Users → Add user, com e-mail confirmado)
+- [x] `pnpm add @supabase/supabase-js @supabase/ssr zod slugify server-only`
+- [x] `.env.example` com as variáveis públicas e `.env.local` ignorado pelo Git
+- [ ] `.env.local` com `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+- [x] `lib/env.ts` — valida as variáveis do Supabase com Zod na inicialização do cliente
+- [x] Escrever `supabase/migrations/0001_schema.sql`, `0002_rls.sql`, `0003_storage.sql` e `0004_seed.sql` (SQL na seção Supabase abaixo; o seed vem do mock)
+- [ ] Executar as quatro migrations no SQL Editor do Supabase
+- [x] `lib/supabase/publico.ts` (anon, sem cookies)
+- [ ] Reescrever `lib/produtos.ts` com o Supabase, resolvendo a promoção ativa em `preco_promocional` (código em `ARQUITETURA_V2.md`)
+- [x] `next.config.ts`: liberar o host do Storage em `remotePatterns`
+- [ ] `export const revalidate = 300` em `/` e `/produto/[slug]`
+- [ ] `app/api/keepalive/route.ts` + cron externo a cada 3 dias
+- [ ] Validar com `pnpm build && pnpm start`: catálogo igual ao do mock; produto `disponivel = false` não aparece; promoção com `fim` no passado não aparece; busca e filtro por categoria funcionando
+- [ ] Depois de validado, remover `lib/mock/` (confirmar com o desenvolvedor)
+
 ---
 
 ## Checklist de Entrega (quando o projeto estiver pronto)
@@ -495,87 +515,134 @@ export default nextConfig
 
 ---
 
-### 🗄️ Supabase — Banco de Dados
+### 🗄️ Supabase — Banco, Auth e Storage
 
-**Quando ligar:** quando o cliente precisar cadastrar produtos sem precisar de você.
+**Quando ligar:** Fase 6 (pré-requisito do admin da Fase 7).
 
 #### Passos
-1. Criar conta em supabase.com e novo projeto
-2. Instalar: `pnpm add @supabase/supabase-js`
-3. Criar `lib/supabase.ts` (server) e `lib/supabase-client.ts` (browser)
-4. Descomentar variáveis no `.env.local`
-5. Substituir o conteúdo de `lib/produtos.ts` pelas queries do Supabase
+1. Criar conta em supabase.com e novo projeto (região São Paulo)
+2. Auth → desabilitar cadastro público e criar o usuário do dono
+3. `pnpm add @supabase/supabase-js @supabase/ssr zod slugify server-only`
+4. Preencher `NEXT_PUBLIC_SUPABASE_URL` e `NEXT_PUBLIC_SUPABASE_ANON_KEY` no `.env.local`
+5. Executar as migrations abaixo no SQL Editor, na ordem
+6. Substituir `lib/produtos.ts` pelas queries do Supabase
 
-#### SQL — Tabelas e RLS
+#### `0001_schema.sql` — tabelas
 
 ```sql
--- Categorias
-create table categorias (
+create table public.categorias (
   id uuid primary key default gen_random_uuid(),
-  nome text not null,
+  nome text not null check (char_length(nome) between 1 and 60),
   slug text not null unique,
-  ordem int default 0,
-  criado_em timestamptz default now()
+  ordem int2 not null default 0,
+  criado_em timestamptz not null default now()
 );
 
--- Produtos
-create table produtos (
+create table public.produtos (
   id uuid primary key default gen_random_uuid(),
-  nome text not null,
+  nome text not null check (char_length(nome) between 1 and 120),
   slug text not null unique,
-  descricao text,
-  preco numeric(10,2) not null,
-  preco_promocional numeric(10,2),
+  descricao text check (char_length(descricao) <= 1000),
+  preco numeric(10,2) not null check (preco >= 0),
   imagem_url text,
-  categoria_id uuid references categorias(id),
-  disponivel boolean default true,
-  destaque boolean default false,
-  ordem int default 0,
-  criado_em timestamptz default now()
+  imagem_path text,                       -- só quando a imagem está no Storage
+  categoria_id uuid not null references public.categorias(id) on delete restrict,
+  disponivel boolean not null default true,
+  destaque boolean not null default false,
+  ordem int2 not null default 0,
+  criado_em timestamptz not null default now()
 );
 
-create index on produtos(categoria_id);
-create index on produtos(disponivel);
-create index on produtos(slug);
+create table public.promocoes (
+  id uuid primary key default gen_random_uuid(),
+  produto_id uuid not null references public.produtos(id) on delete cascade,
+  preco_promocional numeric(10,2) not null check (preco_promocional >= 0),
+  inicio timestamptz not null default now(),
+  fim timestamptz,                        -- null = sem data de término
+  criado_em timestamptz not null default now(),
+  check (fim is null or fim > inicio)
+);
 
--- RLS — leitura pública
-alter table produtos enable row level security;
-alter table categorias enable row level security;
-
-create policy "Leitura pública de produtos"
-  on produtos for select using (disponivel = true);
-
-create policy "Leitura pública de categorias"
-  on categorias for select using (true);
+create index on public.produtos (categoria_id);
+create index on public.produtos (disponivel);
+create index on public.promocoes (produto_id);
+create index on public.promocoes (inicio, fim);
 ```
 
-#### `lib/produtos.ts` com Supabase (substitui o mock)
+> "Preço promocional menor que o normal" e "sem sobreposição de promoções" dependem de mais de uma tabela, então são validados na Server Action, não no banco.
 
-```typescript
-import { supabase } from "@/lib/supabase"
-import type { Produto, Categoria } from "@/types"
+#### `0002_rls.sql` — leitura pública, escrita só do dono
 
-export async function getProdutos(): Promise<Produto[]> {
-  const { data, error } = await supabase
-    .from("produtos")
-    .select("*, categorias(id, nome, slug, ordem)")
-    .eq("disponivel", true)
-    .order("ordem")
-  if (error) throw new Error(error.message)
-  return data ?? []
-}
+```sql
+alter table public.categorias enable row level security;
+alter table public.produtos   enable row level security;
+alter table public.promocoes  enable row level security;
 
-// ... demais funções
+-- Leitura pública (site)
+create policy "leitura publica de categorias" on public.categorias
+  for select using (true);
+
+create policy "leitura publica de produtos disponiveis" on public.produtos
+  for select using (disponivel = true);
+
+create policy "leitura publica de promocoes ativas" on public.promocoes
+  for select using (inicio <= now() and (fim is null or fim > now()));
+
+-- Dono (único usuário autenticado; cadastro público desabilitado)
+create policy "admin le tudo em categorias" on public.categorias
+  for select to authenticated using (true);
+create policy "admin escreve categorias" on public.categorias
+  for all to authenticated using (true) with check (true);
+
+create policy "admin le tudo em produtos" on public.produtos
+  for select to authenticated using (true);
+create policy "admin escreve produtos" on public.produtos
+  for all to authenticated using (true) with check (true);
+
+create policy "admin le tudo em promocoes" on public.promocoes
+  for select to authenticated using (true);
+create policy "admin escreve promocoes" on public.promocoes
+  for all to authenticated using (true) with check (true);
+
+-- A Data API exige permissões explícitas para tabelas novas.
+grant select on public.categorias, public.produtos, public.promocoes to anon;
+grant select, insert, update, delete
+  on public.categorias, public.produtos, public.promocoes to authenticated;
 ```
+
+> As políticas `to authenticated` só são seguras porque o cadastro público está desabilitado. Se um dia houver mais de um usuário, trocar por uma verificação de papel (por exemplo, uma tabela `admins`).
+
+#### `0003_storage.sql` — bucket de imagens
+
+```sql
+insert into storage.buckets (id, name, public, file_size_limit, allowed_mime_types)
+values ('produtos', 'produtos', true, 1048576, array['image/webp', 'image/jpeg', 'image/png'])
+on conflict (id) do nothing;
+
+-- Bucket público: as imagens abrem por URL sem política de leitura.
+-- As políticas abaixo são só para o dono gerenciar os arquivos.
+create policy "admin le imagens" on storage.objects
+  for select to authenticated using (bucket_id = 'produtos');
+create policy "admin envia imagens" on storage.objects
+  for insert to authenticated with check (bucket_id = 'produtos');
+create policy "admin altera imagens" on storage.objects
+  for update to authenticated using (bucket_id = 'produtos');
+create policy "admin remove imagens" on storage.objects
+  for delete to authenticated using (bucket_id = 'produtos');
+```
+
+#### `0004_seed.sql`
+
+Gerar a partir de `lib/mock/produtos.ts`: 4 categorias, 10 produtos (com `imagem_url` do Unsplash, `imagem_path` nulo) e uma linha em `promocoes` para cada produto que hoje tem `preco_promocional` (`inicio = now()`, `fim = null`). Usar `slug` do mock.
 
 #### Keepalive (Supabase Free pausa após 1 semana sem acesso)
 
 ```typescript
 // app/api/keepalive/route.ts
-import { supabase } from "@/lib/supabase"
+import { supabasePublico } from "@/lib/supabase/publico"
 
 export async function GET() {
-  await supabase.from("produtos").select("id").limit(1)
+  await supabasePublico.from("produtos").select("id").limit(1)
   return Response.json({ ok: true })
 }
 ```
