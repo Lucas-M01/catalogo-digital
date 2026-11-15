@@ -532,6 +532,15 @@ export default nextConfig
 - [x] `lib/admin/preco.ts` e schemas Zod
 - [x] Slug gerado na criação e nunca alterado
 
+**7D — Upload de imagens**
+
+- [x] `components/admin/upload-imagem.tsx` — escolher/tirar foto, prévia, remover
+- [x] `lib/admin/imagem.ts` — valida tipo (JPEG, PNG, WebP), redimensiona para 1200px e converte para WebP no navegador
+- [x] Envio direto ao bucket `produtos` com o cliente do navegador (sessão do dono)
+- [x] A action valida `imagem_url`/`imagem_path` e remove o arquivo antigo ao trocar
+- [x] Testar com foto grande tirada no celular na build de produção, com Storage simulado
+- [ ] Conferir a troca e a exclusão de arquivos no painel do Supabase com a conta do dono
+
 ---
 
 ## Checklist de Entrega (quando o projeto estiver pronto)

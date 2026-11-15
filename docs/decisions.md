@@ -69,3 +69,9 @@
 - A busca administrativa filtra os resultados paginados por nome, ignorando acentos e diferenças entre maiúsculas e minúsculas.
 - A edição envia os campos ocultos de imagem, e a gravação deixa as colunas de imagem fora do payload. A exclusão usa o caminho retornado pela linha excluída. Se o Storage falhar, o catálogo é revalidado e a lista informa que a limpeza do arquivo ficou pendente.
 - A rota pública de detalhe aceita slugs sob demanda. Os detalhes mantêm ISR de 300 segundos e são revalidados após as mutações do painel. Isso permite abrir produtos novos e reativados sem um novo build.
+
+## Fase 7D
+
+- O canvas recebe a imagem com a orientação EXIF aplicada. A conversão começa em WebP com qualidade 0,8, reduz a qualidade em etapas e reduz as dimensões se necessário para respeitar 1 MiB.
+- O servidor valida o par de URL e caminho. Uma imagem legada só é aceita se os dois valores coincidirem com o registro atual. Quando a foto é alterada, a gravação confere o par anterior para evitar que edições concorrentes apaguem a imagem de outra gravação.
+- A remoção do objeto anterior ocorre depois da gravação no Postgres. Falhas de limpeza são registradas no servidor. Arquivos enviados sem salvar o produto podem ficar no bucket para limpeza manual.
