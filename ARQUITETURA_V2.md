@@ -582,6 +582,16 @@ O layout raiz define idioma, fonte e tema. [O layout da loja](app/(loja)/layout.
 
 ---
 
+## Horário de funcionamento — Fase 8C
+
+- O layout da loja chama `getDadosLoja()`, que lê a semana e a configuração em paralelo pelo cliente público do Supabase. Se qualquer leitura falhar, o servidor registra o erro e usa a configuração de loja aberta. A página 404 da raiz usa a mesma leitura.
+- A estrutura da loja passa os dados serializáveis ao `LojaProvider`. O status começa desconhecido no HTML e na primeira renderização no navegador. O efeito inicializa o relógio depois da hidratação, atualiza a cada 30 segundos e consulta a hora novamente quando a aba fica visível. O cálculo sempre usa `America/Fortaleza`.
+- A faixa abaixo do cabeçalho anuncia o fechamento e a próxima abertura, ou o horário de fechamento quando faltam até 30 minutos. O rodapé agrupa dias consecutivos com horários iguais quando a grade está ativa.
+- O carrinho permite adicionar e editar itens em qualquer horário. O botão do WhatsApp fica desabilitado enquanto o status é desconhecido ou a loja está fechada. O clique recalcula o status com o instante atual antes de abrir o link.
+- O fluxo preserva a renderização descrita acima. A home e a busca resolvem os filtros da URL por requisição, e o detalhe consulta o preço vigente com `revalidate = 0`. A mutação do painel chama `revalidarCatalogo()`. A próxima requisição recebe a configuração nova, e a aba aberta reavalia o relógio com a grade que recebeu.
+
+---
+
 ## Admin — Fases 6 e 7
 
 ### Fluxo

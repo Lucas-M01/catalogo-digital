@@ -12,6 +12,12 @@ const DIAS_SEMANA = [
 const MINUTOS_DIA = 24 * 60;
 const MINUTOS_SEMANA = 7 * MINUTOS_DIA;
 
+export function textoLojaFechada(proximaAbertura: string | null): string {
+  return proximaAbertura
+    ? `Loja fechada · abre ${proximaAbertura}`
+    : "Loja fechada no momento";
+}
+
 const formatoLoja = new Intl.DateTimeFormat("pt-BR", {
   timeZone: "America/Fortaleza",
   weekday: "long",

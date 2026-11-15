@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { EstruturaLoja } from "@/components/layout/estrutura-loja";
 import { siteUrl } from "@/lib/env";
+import { getDadosLoja } from "@/lib/loja";
 
 const nomeLoja = "Cardápio Digital";
 const description =
@@ -19,6 +20,9 @@ export const metadata: Metadata = {
   },
 };
 
-export default function LayoutLoja({ children }: LayoutProps<"/">) {
-  return <EstruturaLoja>{children}</EstruturaLoja>;
+export const revalidate = 300;
+
+export default async function LayoutLoja({ children }: LayoutProps<"/">) {
+  const dados = await getDadosLoja();
+  return <EstruturaLoja {...dados}>{children}</EstruturaLoja>;
 }

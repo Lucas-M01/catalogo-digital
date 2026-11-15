@@ -105,3 +105,8 @@
 - A validação aceita intervalos adjacentes. Para comparar dois intervalos do mesmo dia, considera até a meia-noite quando o fechamento cai no dia seguinte.
 - A barra inferior reserva mais largura para os rótulos “Categorias” e “Promoções”. Os formulários preservam a edição após o envio, interceptando o reset nativo que levaria os interruptores do Radix aos valores iniciais.
 - A migration 0006 faz a RPC adquirir um bloqueio de escrita antes de substituir os horários. Envios simultâneos passam em sequência e as leituras podem continuar durante a gravação. [Documentação de LOCK do PostgreSQL](https://www.postgresql.org/docs/current/sql-lock.html)
+
+## Fase 8C
+
+- A home segue dinâmica pelos filtros da URL e o detalhe mantém `revalidate = 0` para respeitar a vigência das promoções, conforme confirmado para esta fase. A leitura de horários usa o cliente público e a revalidação já disparada pelo painel.
+- A faixa fica oculta enquanto o relógio ainda está desconhecido, quando a grade está desativada sem pausa e quando faltam mais de 30 minutos para fechar. O rodapé agrupa os dias consecutivos de segunda a domingo e inclui os dias fechados.

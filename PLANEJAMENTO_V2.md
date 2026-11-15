@@ -576,8 +576,10 @@ export default nextConfig
 
 **8C — Site público**
 
-- [ ] Integrar a leitura e exibir o status e a próxima abertura no catálogo.
-- [ ] Validar a atualização do status durante a visita, considerando a hora de Fortaleza.
+- [x] Integrar a leitura e exibir a faixa de status, a próxima abertura e os horários agrupados no rodapé.
+- [x] Bloquear o envio pelo WhatsApp enquanto a loja está fechada, com nova conferência no clique.
+- [x] Preservar a renderização da home e do detalhe, conforme decisão da Fase 8C.
+- [x] Validar fechamento durante a visita, revalidação do painel, fuso e larguras de 320 e 375 px na build de produção com Chrome e Supabase simulado.
 
 ---
 

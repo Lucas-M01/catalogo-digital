@@ -5,6 +5,7 @@ import Link from "next/link";
 import { BotaoWhatsApp } from "@/components/carrinho/botao-whatsapp";
 import { useCarrinho } from "@/components/carrinho/carrinho-provider";
 import { ItemCarrinho } from "@/components/carrinho/item-carrinho";
+import { useLoja } from "@/components/loja/loja-provider";
 import { Button } from "@/components/ui/button";
 import {
   Sheet,
@@ -18,6 +19,7 @@ import { formatarPreco } from "@/lib/whatsapp";
 
 export function DrawerCarrinho({ numeroWhatsApp }: { numeroWhatsApp: string }) {
   const { itens, total, totalItens } = useCarrinho();
+  const { status } = useLoja();
   const contagem = totalItens === 1 ? "1 item" : `${totalItens} itens`;
 
   return (
@@ -89,6 +91,11 @@ export function DrawerCarrinho({ numeroWhatsApp }: { numeroWhatsApp: string }) {
             <span>Total</span>
             <span>{formatarPreco(total)}</span>
           </p>
+          {status?.aberta === false && (
+            <output className="block text-sm text-muted-foreground">
+              Você pode montar o carrinho e enviar o pedido quando a loja abrir.
+            </output>
+          )}
           <BotaoWhatsApp numeroWhatsApp={numeroWhatsApp} />
         </div>
       </SheetContent>
