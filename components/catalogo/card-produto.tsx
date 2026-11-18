@@ -25,15 +25,15 @@ export function CardProduto({ produto, preload }: Props) {
           />
         </div>
         <div className="flex flex-1 flex-col justify-between gap-2 p-2 md:p-4">
+          <p className="text-xs uppercase md:text-sm text-muted-foreground">
+            {produto.categoria.nome}
+          </p>
           <h3
             id={`produto-${produto.id}`}
             className="font-semibold [overflow-wrap:anywhere] motion-safe:transition-colors motion-safe:duration-200 motion-safe:ease-out group-hover:text-primary-hover"
           >
             {produto.nome}
           </h3>
-          <p className="text-xs uppercase md:text-sm text-muted-foreground">
-            {produto.categoria.nome}
-          </p>
           <PrecoProduto
             preco={produto.preco}
             preco_promocional={produto.preco_promocional}

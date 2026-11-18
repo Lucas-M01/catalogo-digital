@@ -4,6 +4,7 @@ const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.trim();
 
 const nextConfig: NextConfig = {
   reactCompiler: true,
+  allowedDevOrigins: ["192.168.0.110"],
   images: {
     remotePatterns: [
       {
