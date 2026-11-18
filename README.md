@@ -78,3 +78,7 @@ O build requer as variáveis de ambiente configuradas. Os testes manuais com a c
 - [Guia do painel](docs/ADMIN.md)
 
 A publicação do código no GitHub não inclui hospedagem da aplicação. O deploy em Cloudflare Workers é uma etapa futura.
+
+## Licença
+
+Este projeto está disponível sob a [licença MIT](LICENSE). Copyright (c) 2026 Lucas Montenegro.
