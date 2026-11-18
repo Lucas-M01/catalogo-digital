@@ -1,7 +1,7 @@
 # Catálogo Digital — Planejamento v2 (Fase de Testes)
 
 > Versão adaptada para desenvolvimento local sem Git, usando pnpm, mock de dados e foco em mobile first.  
-> Supabase e Cloudflare estão documentados ao final como seções opcionais — fáceis de ligar quando chegar a hora.
+> A Fase 6 liga o Supabase e a Fase 7 entrega o painel admin. O deploy na Cloudflare continua como seção opcional ao final.
 
 ---
 
@@ -9,9 +9,9 @@
 
 Site de catálogo digital para loja com envio de pedidos via WhatsApp. O cliente navega pelos produtos, monta um carrinho e envia o pedido completo em uma única mensagem.
 
-**Stack:** Next.js 15 (App Router) · TypeScript · Tailwind CSS · shadcn/ui  
+**Stack:** Next.js 16 (App Router) · TypeScript · Tailwind CSS · shadcn/ui · Supabase (Fase 6+) · Zod  
 **Gerenciador:** pnpm  
-**Dados:** Mock local (arquivo `.ts`) — sem banco de dados no momento  
+**Dados:** Mock local até a Fase 5; Supabase (Postgres, Auth e Storage) a partir da Fase 6  
 **Ferramentas:** Biome · React Compiler · Turbopack  
 **Mobile first:** layout pensado para celular, expandido progressivamente para desktop
 
@@ -26,7 +26,12 @@ Site de catálogo digital para loja com envio de pedidos via WhatsApp. O cliente
 - Seguir as regras do React estritamente para o compiler funcionar — nunca mutar estado diretamente
 - Componentes pequenos e focados — um componente, uma responsabilidade
 - Toda lógica de dados fica em `lib/` — nunca inline nos componentes
-- **Dados vêm do mock** durante o desenvolvimento — a troca para Supabase é feita só em `lib/produtos.ts`, sem tocar em nenhum componente
+- **Dados vêm do mock** até a Fase 5. A troca para Supabase (Fase 6) é feita só em `lib/produtos.ts`, sem tocar em nenhum componente. O tipo `Produto` não muda: a promoção ativa é resolvida em `lib/produtos.ts` e entregue no campo `preco_promocional`
+- **Admin (Fase 7):** o dono usa pelo celular, então o admin também é mobile first
+- **Admin — segurança:** páginas e Server Actions protegidas chamam `exigirAdmin()`. A action `entrar()` valida as credenciais com Zod e inicia a sessão. As políticas de escrita pressupõem cadastro público desabilitado e apenas a conta do dono. O projeto usa a sessão do dono e a RLS.
+- **Admin — dados:** toda entrada validada com Zod no servidor; escrita só com a sessão do dono + RLS; preço aceita vírgula (pt-BR)
+- **Admin — cache:** sem `cacheComponents` e sem `'use cache'`; após cada mutação, `revalidarCatalogo()`
+- **Slug é imutável** depois de criado, para não quebrar links já compartilhados
 
 ---
 
@@ -67,6 +72,40 @@ Site de catálogo digital para loja com envio de pedidos via WhatsApp. O cliente
 │
 ├── biome.json
 └── next.config.ts
+```
+
+### Estrutura acrescentada nas Fases 6 e 7
+
+As rotas públicas passam para o route group `(loja)` (as URLs não mudam) e o admin ganha o seu.
+
+```
+├── app/
+│   ├── layout.tsx                      # só html, body, fonte e tema
+│   ├── (loja)/
+│   │   ├── layout.tsx                  # CarrinhoProvider + Header + Footer
+│   │   ├── (inicio)/                   # page, loading
+│   │   ├── produto/[slug]/             # layout, page, loading
+│   │   └── busca/                      # page, loading
+│   ├── (admin)/admin/
+│   │   ├── login/page.tsx              # fora do layout com navegação
+│   │   └── (painel)/
+│   │       ├── layout.tsx              # navegação do admin + noindex
+│   │       ├── page.tsx                # resumo
+│   │       ├── produtos/               # page, novo/page, [id]/page, actions.ts
+│   │       ├── categorias/             # page, actions.ts
+│   │       └── promocoes/              # page, nova/page, [id]/page, actions.ts
+│   ├── api/keepalive/route.ts
+│   └── robots.ts                       # Disallow: /admin
+│
+├── components/admin/                   # formulários, navegação, upload de imagem, lista de cards
+│
+├── lib/
+│   ├── env.ts                          # valida variáveis de ambiente com Zod
+│   ├── supabase/                       # publico.ts · servidor.ts · navegador.ts · sessao.ts
+│   └── admin/                          # auth · produtos · categorias · promocoes · preco · slug · imagem · revalidar
+│
+├── proxy.ts                            # renova a sessão e redireciona /admin/* (matcher só /admin)
+└── supabase/migrations/                # 0001_schema · 0002_rls · 0003_storage · 0004_seed
 ```
 
 ---
@@ -300,6 +339,35 @@ export type ItemCarrinho = {
 }
 ```
 
+### Tipos acrescentados na Fase 7
+
+```typescript
+// types/index.ts (acrescentar)
+
+export type Promocao = {
+  id: string
+  produto_id: string
+  preco_promocional: number
+  inicio: string        // ISO (timestamptz)
+  fim: string | null    // null = sem data de término
+}
+
+export type StatusPromocao = "ativa" | "agendada" | "expirada"
+
+// Produto como o admin enxerga: inclui indisponíveis e todas as promoções
+export type ProdutoAdmin = Omit<Produto, "preco_promocional"> & {
+  imagem_path: string | null   // caminho no Storage (null se a imagem for URL externa)
+  promocoes: Promocao[]
+}
+
+// Retorno padrão de toda Server Action de formulário
+export type EstadoForm = {
+  ok: boolean
+  mensagem?: string
+  erros?: Record<string, string[] | undefined>
+}
+```
+
 ---
 
 ## Mobile First — Diretrizes de Layout
@@ -326,7 +394,7 @@ Todos os componentes seguem a ordem: **base (mobile) → `md:` (tablet) → `lg:
 
 - Botão "Adicionar ao carrinho" sempre visível e grande (min 48px de altura — tamanho mínimo de toque)
 - Drawer do carrinho abre por baixo no mobile (bottom sheet), lateral no desktop
-- Cards em 1 coluna no mobile, 2 no tablet e 3 no desktop
+- Cards em 2 colunas no mobile, 3 no tablet e 4 no desktop após a revisão visual do Stitch
 - Filtros de categoria em scroll horizontal no mobile, vertical/sidebar no desktop
 - Input de busca ocupa toda a largura no mobile
 - Imagem do produto ocupa pelo menos 40% da altura do card no mobile
@@ -473,7 +541,6 @@ export default nextConfig
 - [x] Cores e tipografia definidas em `app/globals.css` com `@theme inline` (Tailwind CSS 4)
 - [x] Aplicar o tema escuro, os cards e o layout do detalhe com base no Stitch
 - [x] Alternar entre os temas escuro e claro pelo cabeçalho e lembrar a escolha no navegador
-- [x] Permitir ajustar quantidades nos cards e no detalhe, com acesso ao carrinho durante a rolagem
 - [ ] Testar performance no PageSpeed Mobile (meta: acima de 85)
 
 ### Fase 6 — Supabase (pré-requisito do admin)
@@ -512,7 +579,7 @@ export default nextConfig
 - [x] Layout do painel: barra inferior no mobile, lateral no desktop; `noindex`; `app/robots.ts` com `Disallow: /admin`
 - [x] `/admin` — resumo (contagem de produtos, ocultos e promoções ativas) com atalhos
 - [x] shadcn: `label`, `textarea`, `select`, `switch`, `alert-dialog`
-- [x] Testar: `/admin` sem login redireciona; `sair()` sem sessão é rejeitada; rotas públicas seguem sem cookies, com ISR no detalhe e renderização dinâmica na home e na busca por causa de `searchParams`
+- [x] Testar: `/admin` sem login redireciona; `sair()` sem sessão é rejeitada; rotas públicas seguem sem cookies. Home e busca leem `searchParams`, e o detalhe consulta a vigência a cada acesso
 - [x] Testar login válido, erro genérico e saída com uma sessão simulada na build de produção
 - [ ] Validar login e saída com a conta real do dono no Supabase configurado
 
@@ -597,9 +664,9 @@ export default nextConfig
 
 ---
 
-## ⚡ Seções Opcionais — Ligar quando precisar
+## ⚡ Supabase (Fases 6 e 7) e Seções Opcionais
 
-> As seções abaixo não são necessárias agora. Estão aqui para consulta rápida quando o projeto evoluir.
+> O Supabase é usado nas Fases 6 e 7. Cloudflare e Git continuam opcionais, para consulta quando chegar a hora.
 
 ---
 
@@ -756,8 +823,8 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 NEXT_PUBLIC_NUMERO_WHATSAPP = ""                  # preencher
-# NEXT_PUBLIC_SUPABASE_URL = ""       # descomentar quando usar Supabase
-# NEXT_PUBLIC_SUPABASE_ANON_KEY = ""  # descomentar quando usar Supabase
+NEXT_PUBLIC_SUPABASE_URL = ""       # preencher (Fase 6)
+NEXT_PUBLIC_SUPABASE_ANON_KEY = ""  # preencher (chave pública)
 ```
 
 #### `package.json` — scripts
@@ -773,6 +840,16 @@ NEXT_PUBLIC_NUMERO_WHATSAPP = ""                  # preencher
 ```
 
 > **Lembrete:** Cloudflare **Pages** está depreciado para Next.js. Usar Workers + OpenNext.
+
+#### Pontos do admin a testar logo no primeiro deploy
+
+Confirmar cada um na documentação do OpenNext (Context7) e **no ambiente real**, não só no `pnpm dev`:
+
+- [ ] `proxy.ts` (Next 16) roda no OpenNext/Cloudflare. Se não rodar, a renovação de sessão precisa de outra estratégia
+- [ ] Login com `@supabase/ssr` grava e lê os cookies de sessão
+- [ ] `revalidatePath` funciona: o ISR no Workers exige cache incremental configurado (por exemplo, bucket R2). Sem ele, a alteração feita no admin não aparece no catálogo
+- [ ] `next/image` com imagens do Supabase Storage (otimização de imagens no Workers pode exigir o binding de Images ou um loader próprio)
+- [ ] Variáveis `NEXT_PUBLIC_*` presentes **no momento do build**, não só em runtime
 
 ---
 
@@ -794,4 +871,4 @@ fix(whatsapp): corrigir encoding de acentos na mensagem
 
 ---
 
-*Planejamento atualizado em maio de 2026.*
+*Planejamento atualizado em novembro de 2026 (inclui as Fases 6 e 7).*

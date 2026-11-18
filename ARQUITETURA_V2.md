@@ -1,7 +1,7 @@
 # Arquitetura — Catálogo Digital v2 (Fase de Testes)
 
 > Blueprint técnico adaptado para desenvolvimento local com mock de dados.  
-> Sem Git, sem Supabase, sem Cloudflare obrigatórios — tudo isso fica nas seções opcionais ao final.
+> Fases 1–5 usam mock. As Fases 6 e 7 adicionam o Supabase e o painel admin (seção "Admin" abaixo). Cloudflare e Git seguem como seções opcionais ao final.
 
 ---
 
@@ -9,12 +9,16 @@
 
 | Camada | Tecnologia |
 |---|---|
-| Framework | Next.js 15 (App Router) |
+| Framework | Next.js 16 (App Router) |
 | Linguagem | TypeScript (modo estrito) |
 | Estilização | Tailwind CSS + CVA + tailwind-merge |
 | Componentes | shadcn/ui (primitivos Radix UI) |
 | Gerenciador | pnpm |
-| Dados | Mock local (`lib/mock/produtos.ts`) |
+| Dados | Mock local até a Fase 5; Supabase (Postgres) a partir da Fase 6 |
+| Auth | Supabase Auth (e-mail e senha, um único usuário) + `@supabase/ssr` |
+| Imagens | Supabase Storage (bucket público `produtos`) |
+| Validação | Zod (Server Actions e variáveis de ambiente) |
+| Slug | `slugify` (`{ lower: true, strict: true }`) |
 | Linting/Format | Biome |
 | MCP | Context7 (docs) + OctoCode (melhores práticas) |
 
@@ -27,11 +31,13 @@ O projeto é organizado em camadas com responsabilidades claras. A regra princip
 A camada de dados (`lib/`) é o único ponto de contato com a fonte de dados. Hoje lê do mock — amanhã lê do Supabase. Os componentes nunca sabem de onde os dados vêm.
 
 ```
-lib/mock/   → fonte de dados local (mock de produtos e categorias)
-lib/        → funções de acesso a dados — única camada que muda ao trocar para Supabase
-types/      → contratos TypeScript compartilhados por todo o projeto
-components/ → UI pura — nunca busca dados diretamente
-app/        → rotas finas — compõe componentes, chama lib/, define metadata
+lib/mock/       → fonte de dados local até a Fase 5 (removida ao fim da Fase 6)
+lib/supabase/   → clientes Supabase (público, servidor, navegador) — única porta de entrada do banco
+lib/produtos.ts → leitura pública — única camada que muda ao trocar mock por Supabase
+lib/admin/      → leitura e escrita administrativas, sempre com a sessão do dono (RLS)
+types/          → contratos TypeScript compartilhados por todo o projeto
+components/     → UI pura — nunca busca dados diretamente; formulários recebem a Server Action por props
+app/            → rotas finas — compõe componentes, chama lib/, define metadata; `actions.ts` do admin vive aqui
 ```
 
 ---
@@ -39,12 +45,15 @@ app/        → rotas finas — compõe componentes, chama lib/, define metadata
 ## Regras de Dependência entre Camadas
 
 ```
-lib/mock/      → não importa nada do projeto
-lib/           → importa apenas de lib/mock/ e types/
-types/         → não importa nada
-components/ui/ → não importa de components/ nem de lib/
-components/    → importa de types/ e components/ui/
-app/           → importa de lib/, components/ e types/
+lib/mock/        → não importa nada do projeto
+lib/env.ts       → não importa nada do projeto
+lib/supabase/    → importa apenas de lib/env.ts
+lib/produtos.ts  → importa de lib/supabase/publico.ts (ou lib/mock/ até a Fase 5) e types/
+lib/admin/       → importa de lib/supabase/, lib/env.ts e types/
+types/           → não importa nada
+components/ui/   → não importa de components/ nem de lib/
+components/      → importa de types/, components/ui/ e lib/admin/imagem.ts (só o upload)
+app/             → importa de lib/, components/ e types/
 ```
 
 **Proibido:**
@@ -53,6 +62,9 @@ app/           → importa de lib/, components/ e types/
 - `lib/` importar de `components/` ou `app/`
 - Importações circulares entre componentes
 - Barrel exports (`index.ts` que re-exporta tudo) — importar direto do arquivo
+- Páginas públicas importarem `lib/supabase/servidor.ts` ou `lib/admin/` (ler cookies torna a página dinâmica e quebra o `revalidate`)
+- Qualquer arquivo de `lib/admin/` sem `import "server-only"` (exceto `imagem.ts`, que roda no navegador)
+- Componentes importarem Server Actions diretamente — a página importa e passa por props
 
 ---
 
@@ -964,8 +976,8 @@ compatibility_flags = ["nodejs_compat"]
 
 [vars]
 NEXT_PUBLIC_NUMERO_WHATSAPP = ""
-# NEXT_PUBLIC_SUPABASE_URL = ""
-# NEXT_PUBLIC_SUPABASE_ANON_KEY = ""
+NEXT_PUBLIC_SUPABASE_URL = ""
+NEXT_PUBLIC_SUPABASE_ANON_KEY = ""
 ```
 
 #### `package.json` — scripts de deploy
@@ -982,6 +994,8 @@ NEXT_PUBLIC_NUMERO_WHATSAPP = ""
 ```
 
 > Cloudflare **Pages** está depreciado para Next.js — usar Workers + OpenNext.
+
+> **Antes de confiar no admin em produção**, testar no primeiro deploy (lista completa em `PLANEJAMENTO_V2.md`): `proxy.ts` rodando no OpenNext, cookies de sessão do `@supabase/ssr`, `revalidatePath` com cache incremental configurado (ISR no Workers) e `next/image` com o Supabase Storage.
 
 ---
 
@@ -1001,4 +1015,4 @@ feat/*    ← features em desenvolvimento
 
 ---
 
-*Arquitetura atualizada em maio de 2026.*
+*Arquitetura atualizada em novembro de 2026 (inclui as Fases 6 e 7).*

@@ -110,3 +110,8 @@
 
 - A home segue dinâmica pelos filtros da URL e o detalhe mantém `revalidate = 0` para respeitar a vigência das promoções, conforme confirmado para esta fase. A leitura de horários usa o cliente público e a revalidação já disparada pelo painel.
 - A faixa fica oculta enquanto o relógio ainda está desconhecido, quando a grade está desativada sem pausa e quando faltam mais de 30 minutos para fechar. O rodapé agrupa os dias consecutivos de segunda a domingo e inclui os dias fechados.
+
+## Publicação no GitHub
+
+- Consolidar as fases na `main` preservando o histórico de commits. Excluir somente as branches locais já incorporadas e publicar apenas a `main` no repositório público `Lucas-M01/catalogo-digital`.
+- O README apresenta as funcionalidades implementadas e a configuração de um ambiente próprio, com as validações pendentes mantidas no planejamento. A publicação do código não realiza deploy nem altera o banco.
